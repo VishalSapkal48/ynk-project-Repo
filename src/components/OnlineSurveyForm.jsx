@@ -1,114 +1,1793 @@
-import React, { useEffect, useState } from "react";
-import questions from "../data/questions";
-import QuestionRenderer from "../components/QuestionRenderer";
+import React, { useState } from "react";
 import logo from "../assets/logo.png";
-import SummaryCard from "./SummaryCard";
+import tapeImg from "../assets/tape.jpg";
+import parkingImg from "../assets/parking.jpg";
+import shutterImg from "../assets/shutter_size.jpg";
+import boardImg from "../assets/board.jpg";
+import lws1Img from "../assets/Left_wall_Side_1.jpg";
+import lws2Img from "../assets/Left_wall_Side_2.jpg";
+import lws3Img from "../assets/Left_wall_Side_3.jpg";
+import rwsImg from "../assets/Right_wall_side.jpg";
+import bwsImg from "../assets/B_wall_side.jpg";
+import axios from "axios";
+// Define formConfig properly
+const formConfig = {
+  title_mr: "शॉप सर्वे फॉर्म",
+  title_en: "Shop Survey Form",
+  navigation_buttons: {
+    back_mr: "मागे",
+    back_en: "Back",
+    next_mr: "पुढे",
+    next_en: "Next",
+  },
+  submit_button_mr: "सबमिट",
+  submit_button_en: "Submit",
+  fields: [
+    {
+      id: "q1",
+      question_mr: "सर तुम्हाला मेजरमेंट टेप बद्दल माहिती आहे का?",
+      question_en: "Sir, do you know about the measuring tape?",
+      type: "yesno",
+      followup: {
+        no: {
+          type: "guide",
+          message_mr: "सर ज्यांना माहिती आहे त्यांना शॉप वर घेऊन या",
+          message_en: "Sir, please bring those who have the information to the shop.",
+        },
+      },
+    },
+    {
+      id: "q2",
+      question_mr: "सर आपल्याकडे मेजरमेंट टेप आहे का?",
+      question_en: "Sir, do you have a measuring tape?",
+      image: tapeImg,
+      type: "yesno",
+      followup: {
+        no: {
+          type: "guide",
+          message_mr: "सर हार्डवेअर मधून घेऊन या",
+          message_en: "Sir, please bring it from the hardware store.",
+        },
+      },
+    },
+    {
+      id: "q3",
+      question_mr: "सर मला गूगलचे करंट लोकेशन पाठवा",
+      question_en: "Sir, please send me your current Google location.",
+      type: "input",
+    },
+    {
+      id: "q4",
+      question_mr: "सर पूर्ण शॉप चे वेगवेगळ्या अँगल ने फोटो पाठवा.",
+      question_en: "Please upload photos of the entire shop from different angles.",
+      type: "multi",
+      components: [
+        {
+          type: "imageupload",
+          image: boardImg,
+          message_en: "Please upload photos of the entire shop from different angles. Upload photo of the board",
+          message_mr: "सर पूर्ण शॉप चे वेगवेगळ्या अँगल ने फोटो पाठवा. बोर्डचा फोटो अपलोड करा",
+          multiple: true,
+        },
+        {
+          type: "imageupload",
+          image: shutterImg,
+          message_en: "Upload photo of the shutter size",
+          message_mr: "शटरचा आकार फोटो अपलोड करा",
+          multiple: true,
+        },
+        {
+          type: "imageupload",
+          image: lws1Img,
+          message_en: "Upload photo of the left-side wall",
+          message_mr: "डाव्या बाजूच्या भिंतीचा फोटो अपलोड करा",
+          multiple: true,
+        },
+        {
+          type: "imageupload",
+          image: rwsImg,
+          message_en: "Upload photo of the right-side wall",
+          message_mr: "उजव्या बाजूच्या भिंतीचा फोटो अपलोड करा",
+          multiple: true,
+        },
+        {
+          type: "imageupload",
+          image: bwsImg,
+          message_en: "Upload photo of the back-side wall",
+          message_mr: "पाठीमागच्या भिंतीचा फोटो अपलोड करा",
+          multiple: true,
+        },
+      ],
+    },
+    {
+      id: "q5",
+      question_mr: "पार्किंगची सोय आहे का?",
+      question_en: "Is there parking available?",
+      image: parkingImg,
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "imageupload",
+          message_en: "Upload parking photos",
+          message_mr: "पार्किंगचे फोटो अपलोड करा",
+          multiple: true,
+        },
+      },
+    },
+    {
+      id: "q6",
+      question_mr: "मटेरियल टाकण्यासाठी जागा आहे का?",
+      question_en: "Is there space to store material?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "imageupload",
+          message_en: "Upload photos",
+          message_mr: "फोटो अपलोड करा",
+          multiple: true,
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Who will provide the storage space?",
+              question_mr: "साठवण जागा कोण देणार?",
+              options: [
+                { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
+                { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q7",
+      question_mr: "पाणी कनेक्शन आहे का?",
+      question_en: "Is there a water connection?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What is the source of the water connection?",
+              question_mr: "पाणी कनेक्शनचा स्रोत काय आहे?",
+              options: [
+                { value: "corporation", label_en: "Municipal Corporation", label_mr: "कॉरपोरेशन" },
+                { value: "borewell", label_en: "Borewell", label_mr: "बोअरवेल" },
+                { value: "society", label_en: "Society", label_mr: "सोसायटी" },
+              ],
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Who will provide the water connection?",
+              question_mr: "पाणी कनेक्शन कोण देणार?",
+              options: [
+                { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
+                { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q8",
+      question_mr: "पाणी किती वेळ उपलब्ध आहे?",
+      question_en: "For how long is the water available?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "For how long is the water available?",
+              question_mr: "पाणी किती वेळ उपलब्ध आहे?",
+              options: [
+                { value: "24_hours", label_en: "24 hours", label_mr: "२४ तास" },
+                { value: "2_hours_morning", label_en: "2 hours in the morning", label_mr: "सकाळी २ तास" },
+                {
+                  value: "2_hours_morning_evening",
+                  label_en: "2 hours in the morning and evening",
+                  label_mr: "सकाळी आणि सायंकाळी २, २ तास",
+                },
+                { value: "alternate_day", label_en: "Every alternate day", label_mr: "एक दिवस आड" },
+                { value: "every_3_days", label_en: "Once every 3 days", label_mr: "तीन दिवस आड" },
+                { value: "other", label_en: "Other", label_mr: "इतर" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Arrange a water tank as a provision:",
+              question_mr: "पाणी साठवण्यासाठी टाकीची व्यवस्था करा:",
+              options: [
+                { value: "1000_ltr", label_en: "1000 liters", label_mr: "१००० लिटर" },
+                { value: "2000_ltr", label_en: "2000 liters", label_mr: "२००० लिटर" },
+                { value: "other_provision", label_en: "Any other provision", label_mr: "इतर कोणतीही व्यवस्था" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q9",
+      question_mr: "लाईट मीटर कनेक्शन आहे का?",
+      question_en: "Is there an electricity meter connection?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What type of electricity meter connection is available?",
+              question_mr: "लाईट मीटर कनेक्शन कोणत्या प्रकारचे आहे?",
+              options: [
+                { value: "single_phase", label_en: "Single Phase", label_mr: "सिंगल" },
+                { value: "three_phase", label_en: "Three Phase", label_mr: "3 फेज" },
+                { value: "other", label_en: "Other", label_mr: "इतर" },
+              ],
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Who will provide the electricity meter connection?",
+              question_mr: "लाईट मीटर कनेक्शन कोण देणार?",
+              options: [
+                { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
+                { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q10",
+      question_mr: "लाइट मीटर कोठे आहे?",
+      question_en: "Where is the electricity meter located?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Where is the electricity meter located?",
+              question_mr: "लाइट मीटर कोठे आहे?",
+              options: [
+                { value: "inside_shop", label_en: "Inside the shop", label_mr: "शॉप मध्ये" },
+                { value: "outside_shop", label_en: "Outside the shop", label_mr: "शॉप च्या बाहेर" },
+                { value: "in_parking", label_en: "In the parking area", label_mr: "पार्किंग मध्ये आहे" },
+                { value: "behind_shop", label_en: "Behind the shop", label_mr: "शॉप च्या पाठीमागे" },
+                { value: "other", label_en: "Other", label_mr: "इतर" },
+              ],
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Who will provide the electricity meter?",
+              question_mr: "लाईट मीटर कोण पुरवणार?",
+              options: [
+                { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
+                { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q11",
+      question_mr: "शॉप मध्ये अर्थिंग आहे का?",
+      question_en: "Is there earthing in the shop?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "imageupload",
+          message_en: "Upload earthing photos",
+          message_mr: "अर्थिंगचे फोटो अपलोड करा",
+          multiple: true,
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Who will provide the earthing?",
+              question_mr: "अर्थिंग कोण देणार?",
+              options: [
+                { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
+                { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q12",
+      question_mr: "ड्रेनेज कनेक्शन आहे का?",
+      question_en: "Is there a drainage connection?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "imageupload",
+          message_en: "Upload photos of the drainage connection.",
+          message_mr: "ड्रेनेज कनेक्शनचे फोटो अपलोड करा",
+          multiple: true,
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Who will provide the drainage connection?",
+              question_mr: "ड्रेनेज कनेक्शन कोण देणार?",
+              options: [
+                { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
+                { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q13",
+      question_mr: "चेंबर चालू आहे का?",
+      question_en: "Is the chamber functioning?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "imageupload",
+          message_en: "Please upload pictures of the chamber.",
+          message_mr: "कृपया चेंबरचा फोटो अपलोड करा.",
+          multiple: true,
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Who will restart the chamber?",
+              question_mr: "चेंबर कोण पुन्हा सुरू करणार?",
+              options: [
+                { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
+                { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q14",
+      question_mr: "झाकण उघडून तपासणी होते का?",
+      question_en: "Does the lid get opened and checked?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "imageupload",
+          message_en: "Please upload pictures.",
+          message_mr: "कृपया फोटो अपलोड करा.",
+          multiple: true,
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Who will check and maintain it?",
+              question_mr: "झाकणाची तपासणी आणि देखभाल कोण करणार?",
+              options: [
+                { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
+                { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+            {
+              type: "radio",
+              question_en: "What is the routine maintenance frequency?",
+              question_mr: "देखभाल किती वेळाने केली जाते?",
+              options: [
+                { value: "weekly", label_en: "Weekly", label_mr: "साप्ताहिक" },
+                { value: "monthly", label_en: "Monthly", label_mr: "मासिक" },
+                { value: "other", label_en: "Other provision", label_mr: "इतर व्यवस्था" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q15",
+      question_mr: "पोटमाळा आहे का?",
+      question_en: "Is there a loft?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "imageupload",
+              message_en: "Please upload pictures of the loft.",
+              message_mr: "कृपया पोटमाळ्याचा फोटो अपलोड करा.",
+              multiple: true,
+            },
+            {
+              type: "input",
+              question_en: "What is the size of the loft (length × width in feet)?",
+              question_mr: "पोटमाळ्याचा आकार किती आहे? (लांबी × रुंदी फूटमध्ये)",
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "input",
+              question_en: "What is the alternative arrangement?",
+              question_mr: "पोटमाळ्यासाठी इतर कोणती व्यवस्था आहे का?",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q16",
+      question_mr: "पोटमाळा करायचा आहे का?",
+      question_en: "Do you want to have a loft?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "input",
+              question_en: "What size of loft would you like to have? (Please specify the dimensions).",
+              question_mr: "तुम्हाला किती आकाराची पोटमाळा हवी आहे? (कृपया मापांची माहिती द्या)",
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "input",
+              question_en: "Is there any other provision for the loft?",
+              question_mr: "पोटमाळ्यासाठी इतर कोणती व्यवस्था आहे का?",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q17",
+      question_mr: "शॉप चे शटर चेक करणे आवश्यक आहे का?",
+      question_en: "Is it necessary to check the shop shutter?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What action is required for the shop shutter?",
+              question_mr: "शॉप च्या शटर साठी कोणती क्रिया आवश्यक आहे?",
+              options: [
+                { value: "servicing_required", label_en: "Servicing required", label_mr: "सर्विसिंग करावी लागेल" },
+                { value: "repairing_required", label_en: "Repairing required", label_mr: "रिपेरिंग करावी लागेल" },
+                { value: "other", label_en: "Other", label_mr: "इतर" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "input",
+              question_en: "Is a new shutter required?",
+              question_mr: "नवीन शटर आवश्यक आहे का?",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q18",
+      question_mr: "भिंतीला प्लास्टर आहे का?",
+      question_en: "Is there plaster on the wall?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What type of plaster is on the wall?",
+              question_mr: "भिंतीला कोणते प्लास्टर आहे?",
+              options: [
+                { value: "cement_plaster", label_en: "Cement plaster", label_mr: "सीमेंट प्लास्टर" },
+                { value: "pop_plaster", label_en: "POP plaster", label_mr: "POP प्लास्टर" },
+                { value: "other", label_en: "Other", label_mr: "इतर" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "imageupload",
+              message_en: "Please upload a picture showing the wall condition.",
+              message_mr: "कृपया भिंतीची स्थिती दर्शवणारा फोटो अपलोड करा.",
+              multiple: true,
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q19",
+      question_mr: "रोलिंग शेड आवश्यक आहे का?",
+      question_en: "Is a rolling shed required?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "imageupload",
+              message_en: "Please upload pictures of the rolling shed.",
+              message_mr: "कृपया रोलिंग शेडचा फोटो अपलोड करा.",
+              multiple: true,
+            },
+            {
+              type: "input",
+              question_en: "What is the size of the rolling shed (length × width in feet)?",
+              question_mr: "रोलिंग शेडचा आकार किती आहे? (लांबी × रुंदी फूटमध्ये)",
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "input",
+              question_en: "Is there any other provision?",
+              question_mr: "इतर कोणती व्यवस्था आहे का?",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q20",
+      question_mr: "पाण्याची टाकी आहे का?",
+      question_en: "Is there a water tank?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What is the capacity of the water tank (in liters)?",
+              question_mr: "टाकी किती लिटरची आहे?",
+              options: [
+                { value: "1000ltr", label_en: "1000 liters", label_mr: "१००० लिटर" },
+                { value: "2000ltr", label_en: "2000 liters", label_mr: "२००० लिटर" },
+                { value: "3000ltr", label_en: "3000 liters", label_mr: "३००० लिटर" },
+                { value: "other", label_en: "Other", label_mr: "इतर" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "input",
+              question_en: "Is there any other provision?",
+              question_mr: "इतर कोणती व्यवस्था आहे का?",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q21",
+      question_mr: "टाकीत पाणी चढवण्यासाठी मोटर आहे का?",
+      question_en: "Is there a motor to pump water into the tank?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What is the capacity of the water pump motor?",
+              question_mr: "पाणी पंपाच्या मोटरची क्षमता किती आहे?",
+              options: [
+                { value: "0.5", label_en: "0.5 HP", label_mr: "०.५ एचपी" },
+                { value: "1", label_en: "1 HP", label_mr: "१ एचपी" },
+                { value: "2", label_en: "2 HP", label_mr: "२ एचपी" },
+                { value: "other", label_en: "Other", label_mr: "इतर" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "input",
+              question_en: "Is there any other provision?",
+              question_mr: "इतर कोणती व्यवस्था आहे का?",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q22",
+      question_mr: "पोटमाळ्यासाठी जिना आहे का?",
+      question_en: "Is there a staircase/ladder for the loft?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "imageupload",
+              message_en: "Please upload pictures of the loft staircase.",
+              message_mr: "कृपया पोटमाळ्याच्या जिन्याचा फोटो अपलोड करा.",
+              multiple: true,
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What is the way to access the loft?",
+              question_mr: "पोटमाळ्यावर जाण्याची व्यवस्था कोणती आहे?",
+              options: [
+                { value: "separate_staircase", label_en: "Separate staircase", label_mr: "स्वतंत्र जिना" },
+                { value: "other", label_en: "Other", label_mr: "इतर" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास कृपया नमूद करा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q23",
+      question_mr: "काम करताना शेजारील दुकानदाराची परवानगी आहे का?",
+      question_en: "Do you have permission from the neighboring shopkeeper to carry out the work?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Till what time is the permission granted?",
+              question_mr: "परवानगी कोणत्या वेळेपर्यंत आहे?",
+              options: [
+                { value: "giving", label_mr: "परमिशन घेऊन देणार", label_en: "Will arrange permission" },
+                { value: "6pm", label_mr: "सायंकाळी सहा वाजेपर्यंत आहे", label_en: "Till 6 PM" },
+                { value: "afternoon", label_mr: "दुपारी बारा नंतर आहे", label_en: "After 12 PM" },
+              ],
+            },
+          ],
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What is the plan to obtain permission?",
+              question_mr: "परवानगी मिळवण्याची योजना काय आहे?",
+              options: [
+                { value: "giving", label_mr: "परमिशन घेऊन देणार", label_en: "Will arrange permission" },
+                { value: "6pm", label_mr: "सायंकाळी सहा वाजेपर्यंत आहे", label_en: "Till 6 PM" },
+                { value: "afternoon", label_mr: "दुपारी बारा नंतर आहे", label_en: "After 12 PM" },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q24",
+      question_mr: "शॉपमध्ये टॉयलेट-बाथरूम आहे का?",
+      question_en: "Is there a toilet/bathroom in the shop?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_mr: "टॉयलेट/बाथरूममध्ये काही दुरुस्तीचे काम करायचे आहे का?",
+              question_en: "Is there any repair work needed in the toilet/bathroom?",
+              options: [
+                {
+                  value: "leakage",
+                  label_mr: "पाण्याचा गळतीचा प्रश्न आहे",
+                  label_en: "There is a water leakage issue",
+                },
+                {
+                  value: "tiles",
+                  label_mr: "फ्लोअर टाईल खराब आहे",
+                  label_en: "Floor tiles are damaged",
+                },
+                {
+                  value: "wash_basin",
+                  label_mr: "वॉश बेसिन खराब आहे",
+                  label_en: "Wash basin is damaged",
+                },
+                {
+                  value: "no_work",
+                  label_mr: "काहीच काम करायचे नाही",
+                  label_en: "No work needed",
+                },
+              ],
+            },
+          ],
+        },
+        no: {
+          type: "guide",
+          message_mr: "ठीक आहे. पुढील प्रश्नासाठी पुढे जा.",
+          message_en: "Alright. Proceed to the next question.",
+        },
+      },
+    },
+    {
+      id: "q25",
+      question_mr: "शॉपमध्ये काही तोडफोडचे काम आहे का?",
+      question_en: "Is there any demolition work required in the shop?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "checkbox",
+              question_mr: "कोणकोणते तोडफोडचे काम करायचे आहे?",
+              question_en: "Which demolition works are required?",
+              options: [
+                { value: "floor_breaking", label_mr: "फ्लोरींग तोडणे", label_en: "Breaking floor" },
+                { value: "wall_scraping", label_mr: "भीत घासणे", label_en: "Scraping wall" },
+                { value: "wall_breaking", label_mr: "भीत तोडणे", label_en: "Breaking wall" },
+                { value: "remove_old_tank", label_mr: "जुनी पाण्याची टाकी काढणे", label_en: "Remove old water tank" },
+                { value: "remove_old_board", label_mr: "जुना बोर्ड काढणे", label_en: "Remove old board" },
+                { value: "remove_old_pop", label_mr: "जुनी POP काढणे", label_en: "Remove old POP" },
+                { value: "remove_rabbit", label_mr: "रॅबीट उचलणे", label_en: "Remove rabbit (raised floor structure)" },
+              ],
+            },
+          ],
+        },
+        no: {
+          type: "guide",
+          message_mr: "ठीक आहे. पुढील प्रश्नाकडे चला.",
+          message_en: "Alright, proceed to the next question.",
+        },
+      },
+    },
+    {
+      id: "q26",
+      question_mr: "शॉप मध्ये काही वीट बांधकामाचं काम आहे का?",
+      question_en: "Is there any brick construction work in the shop?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "input",
+          question_en: "Please specify the details of the brick construction work:",
+          question_mr: "कृपया वीट बांधकामाच्या कामाची माहिती द्या:",
+        },
+        no: {
+          type: "guide",
+          message_mr: "ठीक आहे. पुढील प्रश्नाकडे चला.",
+          message_en: "Alright, proceed to the next question.",
+        },
+      },
+    },
+    {
+      id: "q27",
+      question_mr: "इंटरनेट कनेक्शन आहे का?",
+      question_en: "Is there an internet connection?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "input",
+          question_en: "Please specify the internet connection details:",
+          question_mr: "कृपया इंटरनेट कनेक्शनची माहिती द्या:",
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "If not, what is the alternative provision?",
+              question_mr: "जर इंटरनेट नसेल तर दुसरी कोणती व्यवस्था आहे?",
+              options: [
+                { value: "new", label_mr: "नवीन कनेक्शनसाठी बोलत आहोत", label_en: "Talking to a new provider" },
+                { value: "other", label_mr: "इतर", label_en: "Other" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास कृपया नमूद करा:",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q28",
+      question_mr: "इलेक्ट्रिकलचे काम किती आहे?",
+      question_en: "How much electrical work is required?",
+      type: "input",
+    },
+    {
+      id: "q29",
+      question_mr: "एक्स्जॉस्ट पॉइंट आहे का?",
+      question_en: "Is there an exhaust point?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "imageupload",
+          message_en: "Please upload pictures of the exhaust point.",
+          message_mr: "कृपया एक्स्जॉस्ट पॉइंटचे फोटो अपलोड करा.",
+          multiple: true,
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What is the alternative provision?",
+              question_mr: "इतर पर्याय कोणते आहेत?",
+              options: [
+                { value: "talking_to_new_one", label_mr: "नवीन काढणार", label_en: "Planning to install a new one" },
+                { value: "other", label_mr: "इतर", label_en: "Other" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास कृपया नमूद करा:",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q31",
+      question_mr: "चिमणी करायची आहे का?",
+      question_en: "Is a chimney required?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "input",
+          question_en: "Please specify the chimney requirements:",
+          question_mr: "कृपया चिमणीच्या आवश्यकतांची माहिती द्या:",
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What is the alternative provision?",
+              question_mr: "इतर पर्याय कोणते आहेत?",
+              options: [
+                { value: "talking_to_new_one", label_mr: "नवीन काढणार", label_en: "Planning to install a new one" },
+                { value: "other", label_mr: "इतर", label_en: "Other" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास कृपया नमूद करा:",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q32",
+      question_mr: "स्टेज टाकण्यासाठी जागा आहे का?",
+      question_en: "Is there space to install a stage?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "imageupload",
+          message_en: "Upload photo of the space for stage",
+          message_mr: "स्टेज टाकण्यासाठी जागेचा फोटो अपलोड करा",
+          multiple: false,
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What is the alternative provision?",
+              question_mr: "इतर पर्याय कोणते आहेत?",
+              options: [
+                { value: "talking_to_new_one", label_mr: "नवीन काढणार", label_en: "Planning to create space" },
+                { value: "other", label_mr: "इतर", label_en: "Other" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास कृपया नमूद करा:",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q33",
+      question_mr: "प्लंबरचे काम आहे का?",
+      question_en: "Is there any plumbing work required?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "How many square feet?",
+              question_mr: "किती स्क्वेअर फूट?",
+              options: [
+                { value: "100", label_mr: "१०० स्क्वेअर फूट", label_en: "100 sq ft" },
+                { value: "500", label_mr: "५०० स्क्वेअर फूट", label_en: "500 sq ft" },
+                { value: "other", label_mr: "इतर", label_en: "Other" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q34",
+      question_mr: "बॅटरी बॅकअप आहे का?",
+      question_en: "Is there a battery backup?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "input",
+          question_en: "Please specify the battery backup details:",
+          question_mr: "कृपया बॅटरी बॅकअपची माहिती द्या:",
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "What is the alternative provision?",
+              question_mr: "इतर पर्याय कोणते आहेत?",
+              options: [
+                { value: "talking_to_new_one", label_mr: "नवीन जोडणार", label_en: "Planning to install a new one" },
+                { value: "other", label_mr: "इतर", label_en: "Other" },
+              ],
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा",
+            },
+          ],
+        },
+      },
+    },
+    {
+      id: "q35",
+      question_mr: "शॉप ची एन्ट्री कोणत्या दिशेला आहे?",
+      question_en: "In which direction is the shop entrance?",
+      type: "radio",
+      options: [
+        { value: "east", label_mr: "पूर्व", label_en: "East" },
+        { value: "west", label_mr: "पश्चिम", label_en: "West" },
+        { value: "south", label_mr: "दक्षिण", label_en: "South" },
+        { value: "north", label_mr: "उत्तर", label_en: "North" },
+      ],
+    },
+  ],
+};// Radio Component
+const RadioComponent = ({ lang, comp, qId, compIdx, followupValues, setFollowupValues }) => {
+  const value = followupValues?.[qId]?.[compIdx] || "";
+  return (
+    <div className="mb-4">
+      <p className="text-base font-medium text-gray-800 mb-2 text-left">
+        {lang === "mr" ? comp.question_mr : comp.question_en}
+      </p>
+      {comp.options.map((option, i) => (
+        <div key={i} className="flex items-center space-x-3 mb-2">
+          <input
+            type="radio"
+            name={`${qId}_${compIdx}`}
+            value={option.value}
+            checked={value === option.value}
+            onChange={(e) =>
+              setFollowupValues({
+                ...followupValues,
+                [qId]: { ...followupValues[qId], [compIdx]: e.target.value },
+              })
+            }
+            className="w-4 h-4 text-blue-600"
+          />
+          <label className="text-base text-gray-600">{lang === "mr" ? option.label_mr : option.label_en}</label>
+        </div>
+      ))}
+    </div>
+  );
+};
 
-export default function MultilingualForm() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [lang, setLang] = useState("mr");
-  const [answers, setAnswers] = useState({});
-  const [followupValue, setFollowupValue] = useState("");
-  const [data, setData]=useState();
-  const [uploadedFiles, setUploadedFiles] = useState({}); // State to track uploaded files
+// Input Component
+const InputComponent = ({ lang, comp, qId, compIdx, followupValues, setFollowupValues }) => {
+  const value = followupValues?.[qId]?.[compIdx] || "";
+  return (
+    <div className="mb-4">
+      <p className="text-base font-medium text-gray-800 mb-2 text-left">
+        {lang === "mr" ? comp.question_mr : comp.question_en}
+      </p>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) =>
+          setFollowupValues({
+            ...followupValues,
+            [qId]: { ...followupValues[qId], [compIdx]: e.target.value },
+          })
+        }
+        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+      />
+    </div>
+  );
+};
 
-  const currentQ = questions[currentIndex];
-  const selectedAnswer = answers[currentQ.id];
+// Image Upload Component
+const ImageUploadComponent = ({ lang, comp, qId, compIdx, handleImageUpload }) => (
+  <div className="mb-4">
+    <p className="text-base font-medium text-gray-800 mb-2 text-left">
+      {lang === "mr" ? comp.message_mr : comp.message_en}
+    </p>
+    <div className="flex justify-between items-center">
+      {comp.image && (
+        <img src={comp.image} alt="Question related visual" className="mb-4 w-36 h-auto rounded" />
+      )}
+      <input
+        type="file"
+        accept="image/*"
+        multiple={comp.multiple}
+        onChange={(e) => handleImageUpload(e.target.files, qId, compIdx)}
+        className="text-sm text-gray-600"
+      />
+    </div>
+  </div>
+);
 
-  // useEffect(() => {
-  //   if (followupValue) {
-  //     setData(prev => [...prev, followupValue]);
-  //   }
-  // }, [followupValue]);
-  
-  // Handle normal text answer
-  const handleAnswer = (value) => {
-    setAnswers({ ...answers, [currentQ.id]: value });
-  };
-
-  // Handle file uploads for image components
-  const handleImageUpload = (files, componentType) => {
-    // Convert FileList to an array
-    const fileArray = Array.from(files);
-
-    // Update state with the uploaded files per component type
-    setUploadedFiles((prevFiles) => ({
-      ...prevFiles,
-      [componentType]: fileArray,
-    }));
-
-    console.log(uploadedFiles); // Log the updated uploaded files (for debugging)
-  };
-
-  // Handle next button click
-  const handleNext = () => {
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      alert("Form submitted:\n" + JSON.stringify({ ...answers, followupValue }, null, 2));
-    }
-    setFollowupValue("");
-  };
-
-  // Handle back button click
-  const goBack = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      setFollowupValue("");
-    }
+// Checkbox Component
+const CheckboxComponent = ({ lang, comp, qId, compIdx, followupValues, setFollowupValues }) => {
+  const values = followupValues?.[qId]?.[compIdx] || [];
+  const handleChange = (value) => {
+    const newValues = values.includes(value)
+      ? values.filter((item) => item !== value)
+      : [...values, value];
+    setFollowupValues({
+      ...followupValues,
+      [qId]: { ...followupValues[qId], [compIdx]: newValues },
+    });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <SummaryCard language="en" />
+    <div className="mb-4">
+      <p className="text-base font-medium text-gray-800 mb-2">
+        {lang === "mr" ? comp.question_mr : comp.question_en}
+      </p>
+      {comp.options.map((option, i) => (
+        <div key={i} className="flex items-center space-x-3 mb-2">
+          <input
+            type="checkbox"
+            name={`${qId}_${compIdx}`}
+            value={option.value}
+            checked={values.includes(option.value)}
+            onChange={() => handleChange(option.value)}
+            className="w-4 h-4 text-blue-600"
+          />
+          <label className="text-base text-gray-600">{lang === "mr" ? option.label_mr : option.label_en}</label>
+        </div>
+      ))}
+    </div>
+  );
+};
 
+// Render Field Function
+const renderField = ({ lang, field, formData, handleYesNoChange }) => {
+  const question = field[`question_${lang}`] || field.question_mr;
+  const id = field.id;
+
+  if (field.type === "yesno") {
+    return (
+      <div key={id} className="mb-6">
+        <h3 className="text-lg font-medium text-left text-gray-800 mb-2">{question}</h3>
+        {field.image && (
+          <img src={field.image} alt="Question related visual" className="mb-4 max-w-full h-auto rounded" />
+        )}
+        <div className="flex flex-col space-y-3">
+          <label className="flex items-center space-x-3">
+            <input
+              type="radio"
+              name={id}
+              checked={formData[id] === true}
+              onChange={() => handleYesNoChange(id, "yes")}
+              className="w-4 h-4 text-blue-600"
+            />
+            <span className={`text-base ${formData[id] === true ? "text-gray-800 font-medium" : "text-gray-600"}`}>
+              {lang === "mr" ? "होय" : "Yes"}
+            </span>
+          </label>
+          <label className="flex items-center space-x-3">
+            <input
+              type="radio"
+              name={id}
+              checked={formData[id] === false}
+              onChange={() => handleYesNoChange(id, "no")}
+              className="w-4 h-4 text-blue-600"
+            />
+            <span className={`text-base ${formData[id] === false ? "text-gray-800 font-medium" : "text-gray-600"}`}>
+              {lang === "mr" ? "नाही" : "No"}
+            </span>
+          </label>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+// Question Renderer Component
+const QuestionRenderer = ({
+  lang,
+  question,
+  selectedAnswer,
+  followupValues,
+  setFollowupValues,
+  handleAnswer,
+  handleImageUpload,
+  handleYesNoChange,
+  formData,
+}) => {
+  const renderFollowup = (selectedAnswer) => {
+    const followup = question.followup?.[selectedAnswer ? "yes" : "no"];
+    if (!followup) return null;
+
+    if (followup.type === "imageupload") {
+      return (
+        <ImageUploadComponent
+          lang={lang}
+          comp={followup}
+          qId={question.id}
+          compIdx={0}
+          handleImageUpload={handleImageUpload}
+        />
+      );
+    }
+
+    if (followup.type === "guide") {
+      return (
+        <div className="my-2 p-2 bg-red-50 border border-red-300 rounded">
+          <p className="text-base text-gray-800">{lang === "mr" ? followup.message_mr : followup.message_en}</p>
+        </div>
+      );
+    }
+
+    if (followup.type === "radio") {
+      return (
+        <RadioComponent
+          lang={lang}
+          comp={followup}
+          qId={question.id}
+          compIdx={0}
+          followupValues={followupValues}
+          setFollowupValues={setFollowupValues}
+        />
+      );
+    }
+
+    if (followup.type === "input") {
+      return (
+        <InputComponent
+          lang={lang}
+          comp={followup}
+          qId={question.id}
+          compIdx={0}
+          followupValues={followupValues}
+          setFollowupValues={setFollowupValues}
+        />
+      );
+    }
+
+    if (followup.type === "checkbox") {
+      return (
+        <CheckboxComponent
+          lang={lang}
+          comp={followup}
+          qId={question.id}
+          compIdx={0}
+          followupValues={followupValues}
+          setFollowupValues={setFollowupValues}
+        />
+      );
+    }
+
+    if (followup.type === "multi") {
+      return (
+        <div>
+          {followup.components.map((comp, idx) => {
+            if (comp.type === "radio") {
+              return (
+                <RadioComponent
+                  key={idx}
+                  lang={lang}
+                  comp={comp}
+                  qId={question.id}
+                  compIdx={idx}
+                  followupValues={followupValues}
+                  setFollowupValues={setFollowupValues}
+                />
+              );
+            }
+            if (comp.type === "input") {
+              return (
+                <InputComponent
+                  key={idx}
+                  lang={lang}
+                  comp={comp}
+                  qId={question.id}
+                  compIdx={idx}
+                  followupValues={followupValues}
+                  setFollowupValues={setFollowupValues}
+                />
+              );
+            }
+            if (comp.type === "imageupload") {
+              return (
+                <ImageUploadComponent
+                  key={idx}
+                  lang={lang}
+                  comp={comp}
+                  qId={question.id}
+                  compIdx={idx}
+                  handleImageUpload={handleImageUpload}
+                />
+              );
+            }
+            if (comp.type === "checkbox") {
+              return (
+                <CheckboxComponent
+                  key={idx}
+                  lang={lang}
+                  comp={comp}
+                  qId={question.id}
+                  compIdx={idx}
+                  followupValues={followupValues}
+                  setFollowupValues={setFollowupValues}
+                />
+              );
+            }
+            return null;
+          })}
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const renderYesNo = () => (
+    <div className="question">
+      {renderField({ lang, field: question, formData, handleYesNoChange })}
+      {selectedAnswer !== undefined && question.followup && renderFollowup(selectedAnswer)}
+    </div>
+  );
+
+  const renderRadio = () => (
+    <div className="question">
+      <h3 className="text-lg font-medium text-left text-gray-800 mb-2">
+        {lang === "mr" ? question.question_mr : question.question_en}
+      </h3>
+      {question.image && (
+        <img src={question.image} alt="Question related visual" className="mb-4 max-w-full h-auto rounded" />
+      )}
+      <div className="flex flex-col space-y-2 items-start">
+        {question.options.map((option, idx) => (
+          <div key={idx} className="flex items-center space-x-3 mb-2">
+            <input
+              type="radio"
+              id={option.value}
+              name={question.question_mr || question.question_en}
+              value={option.value}
+              checked={selectedAnswer === option.value}
+              onChange={() => handleAnswer(option.value)}
+              className="w-4 h-4 text-blue-600"
+            />
+            <label htmlFor={option.value} className="text-base text-gray-600">
+              {lang === "mr" ? option.label_mr : option.label_en}
+            </label>
+          </div>
+        ))}
+      </div>
+      {selectedAnswer && question.followup && renderFollowup(selectedAnswer)}
+    </div>
+  );
+
+  const renderInput = () => (
+    <div className="question">
+      <h3 className="text-lg font-medium text-left text-gray-800 mb-2">
+        {lang === "mr" ? question.question_mr : question.question_en}
+      </h3>
+      <input
+        type="text"
+        value={followupValues[question.id]?.[0] || ""}
+        onChange={(e) =>
+          setFollowupValues({
+            ...followupValues,
+            [question.id]: { ...followupValues[question.id], 0: e.target.value },
+          })
+        }
+        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+      />
+    </div>
+  );
+
+  const renderMulti = () => (
+    <div className="question">
+      <h3 className="text-lg font-medium text-left text-gray-800 mb-2">
+        {lang === "mr" ? question.question_mr : question.question_en}
+      </h3>
+      {question.components.map((comp, idx) => {
+        if (comp.type === "imageupload") {
+          return (
+            <ImageUploadComponent
+              key={idx}
+              lang={lang}
+              comp={comp}
+              qId={question.id}
+              compIdx={idx}
+              handleImageUpload={handleImageUpload}
+            />
+          );
+        }
+        return null;
+      })}
+    </div>
+  );
+
+  if (question.type === "yesno") return renderYesNo();
+  if (question.type === "radio") return renderRadio();
+  if (question.type === "input") return renderInput();
+  if (question.type === "multi") return renderMulti();
+  return null;
+};
+
+// Main Form Component
+const OnlineServeForm = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [lang, setLang] = useState("mr"); // Default to Marathi
+  const [answers, setAnswers] = useState({});
+  const [followupValues, setFollowupValues] = useState({}); // { qId: { compIdx: value } }
+  const [uploadedFiles, setUploadedFiles] = useState({}); // { qId: { compIdx: [files] } }
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const questions = formConfig.fields;
+  const currentQ = questions[currentIndex];
+  const selectedAnswer = answers[currentQ.id];
+
+  // Validation messages
+  const validationMessages = {
+    en: {
+      answerRequired: "Please provide an answer to the question.",
+      followupRequired: "Please provide a value for the follow-up question.",
+      imageRequired: "Please upload at least one image.",
+      checkboxRequired: "Please select at least one option.",
+      inputRequired: "Please specify details for 'Other'.",
+      submitError: "Failed to submit the form. Please try again.",
+      submitSuccess: "Form submitted successfully!",
+    },
+    mr: {
+      answerRequired: "कृपया प्रश्नाचे उत्तर द्या.",
+      followupRequired: "कृपया फॉलो-अप प्रश्नासाठी मूल्य प्रदान करा.",
+      imageRequired: "कृपया किमान एक प्रतिमा अपलोड करा.",
+      checkboxRequired: "कृपया किमान एक पर्याय निवडा.",
+      inputRequired: "कृपया 'इतर' साठी तपशील निर्दिष्ट करा.",
+      submitError: "फॉर्म सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+      submitSuccess: "फॉर्म यशस्वीपणे सबमिट झाला!",
+    },
+  };
+
+  const handleAnswer = (value) => {
+    setAnswers({ ...answers, [currentQ.id]: value });
+    setFollowupValues({ ...followupValues, [currentQ.id]: {} }); // Reset follow-up values
+    setUploadedFiles({ ...uploadedFiles, [currentQ.id]: {} }); // Reset uploaded files
+  };
+
+  const handleYesNoChange = (id, value) => {
+    setAnswers({ ...answers, [id]: value === "yes" });
+    setFollowupValues({ ...followupValues, [id]: {} }); // Reset follow-up values
+    setUploadedFiles({ ...uploadedFiles, [id]: {} }); // Reset uploaded files
+  };
+
+  const handleImageUpload = (files, qId, compIdx) => {
+    const fileArray = Array.from(files);
+    setUploadedFiles((prevFiles) => ({
+      ...prevFiles,
+      [qId]: {
+        ...prevFiles[qId],
+        [compIdx]: [...(prevFiles[qId]?.[compIdx] || []), ...fileArray],
+      },
+    }));
+  };
+
+  const validateQuestion = (index) => {
+    const question = questions[index];
+    const answer = answers[question.id];
+    const followupValue = followupValues[question.id] || {};
+    const files = uploadedFiles[question.id] || {};
+
+    // Validate main question
+    if (question.type === "yesno" || question.type === "radio") {
+      if (answer === undefined) {
+        alert(validationMessages[lang].answerRequired);
+        return false;
+      }
+    }
+
+    if (question.type === "input" && !followupValue[0]?.trim()) {
+      alert(validationMessages[lang].answerRequired);
+      return false;
+    }
+
+    if (question.type === "multi") {
+      for (let i = 0; i < question.components.length; i++) {
+        if (
+          question.components[i].type === "imageupload" &&
+          (!files[i] || files[i].length === 0)
+        ) {
+          alert(validationMessages[lang].imageRequired);
+          return false;
+        }
+      }
+    }
+
+    // Validate follow-up questions
+    if (answer !== undefined && question.followup) {
+      const followup = question.followup[answer ? "yes" : "no"];
+      if (!followup) return true;
+
+      if (followup.type === "radio" && !followupValue[0]) {
+        alert(validationMessages[lang].followupRequired);
+        return false;
+      }
+
+      if (followup.type === "input" && !followupValue[0]?.trim()) {
+        alert(validationMessages[lang].followupRequired);
+        return false;
+      }
+
+      if (
+        followup.type === "checkbox" &&
+        (!followupValue[0] || followupValue[0].length === 0)
+      ) {
+        alert(validationMessages[lang].checkboxRequired);
+        return false;
+      }
+
+      if (
+        followup.type === "imageupload" &&
+        (!files[0] || files[0].length === 0)
+      ) {
+        alert(validationMessages[lang].imageRequired);
+        return false;
+      }
+
+      if (followup.type === "multi") {
+        for (let i = 0; i < followup.components.length; i++) {
+          const comp = followup.components[i];
+          if (comp.type === "radio" && !followupValue[i]) {
+            alert(validationMessages[lang].followupRequired);
+            return false;
+          }
+          if (
+            comp.type === "input" &&
+            followupValue[i - 1] === "other" &&
+            !followupValue[i]?.trim()
+          ) {
+            alert(validationMessages[lang].inputRequired);
+            return false;
+          }
+          if (
+            comp.type === "checkbox" &&
+            (!followupValue[i] || followupValue[i].length === 0)
+          ) {
+            alert(validationMessages[lang].checkboxRequired);
+            return false;
+          }
+          if (
+            comp.type === "imageupload" &&
+            (!files[i] || files[i].length === 0)
+          ) {
+            alert(validationMessages[lang].imageRequired);
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  };
+
+  const handleNext = () => {
+    if (!validateQuestion(currentIndex)) {
+      return;
+    }
+
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleSubmit = async () => {
+    for (let i = 0; i < questions.length; i++) {
+      if (!validateQuestion(i)) {
+        setCurrentIndex(i);
+        return;
+      }
+    }
+
+    const formData = new FormData();
+    formData.append("answers", JSON.stringify(answers));
+    formData.append("followupValues", JSON.stringify(followupValues));
+    Object.keys(uploadedFiles).forEach((qId) => {
+      Object.keys(uploadedFiles[qId]).forEach((compIdx) => {
+        uploadedFiles[qId][compIdx].forEach((file, fileIdx) => {
+          formData.append(`files_${qId}_${compIdx}_${fileIdx}`, file);
+        });
+      });
+    });
+
+    setIsSubmitting(true);
+
+    try {
+      // Replace with your actual API endpoint
+      const response = await axios.post("YOUR_API_ENDPOINT", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log("Form submission successful:", response.data);
+      console.log("Form Data:", {
+        answers,
+        followupValues,
+        uploadedFiles: Object.keys(uploadedFiles).reduce((acc, qId) => ({
+          ...acc,
+          [qId]: Object.keys(uploadedFiles[qId]).reduce(
+            (compAcc, compIdx) => ({
+              ...compAcc,
+              [compIdx]: uploadedFiles[qId][compIdx].map((file) => file.name),
+            }),
+            {}
+          ),
+        }), {}),
+      });
+
+      alert(validationMessages[lang].submitSuccess);
+    } catch (error) {
+      console.error("Form submission failed:", error);
+      alert(validationMessages[lang].submitError);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const handleLanguageToggle = () => {
+    setLang(lang === "mr" ? "en" : "mr");
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-100">
       <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
-        {/* Header */}
         <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
           <div className="flex items-center space-x-3">
-            <img src={logo} alt="Logo" className="h-10 w-10" />
+            <img src={logo} alt="YNK Logo" className="h-10 w-10" />
             <h1 className="text-xl font-bold">YNK</h1>
           </div>
           <button
-            onClick={() => setLang(lang === "mr" ? "en" : "mr")}
-            className="text-sm text-gray-600 underline"
+            onClick={handleLanguageToggle}
+            className="text-sm text-gray-600 underline hover:text-blue-600"
           >
             {lang === "mr" ? "English" : "मराठी"}
           </button>
         </div>
 
-        <h2 className="text-lg text-center font-bold mb-4">
-          {lang === "mr" ? "फॉर्म माहिती" : "Form Information"}
+        <h2 className="text-lg text-center font-bold mb-4 text-gray-800">
+          {lang === "mr" ? formConfig.title_mr : formConfig.title_en}
         </h2>
 
-        {/* Question Renderer */}
         <QuestionRenderer
           lang={lang}
           question={currentQ}
           selectedAnswer={selectedAnswer}
-          followupValue={followupValue}
-          setFollowupValue={setFollowupValue}
+          followupValues={followupValues}
+          setFollowupValues={setFollowupValues}
           handleAnswer={handleAnswer}
-          handleImageUpload={handleImageUpload} // Pass the image upload handler
+          handleImageUpload={handleImageUpload}
+          handleYesNoChange={handleYesNoChange}
+          formData={answers}
         />
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex justify-between mt-4">
           <button
-            onClick={goBack}
-            className="text-gray-500 underline"
-            disabled={currentIndex === 0}
+            onClick={handleBack}
+            className="text-gray-500 underline disabled:opacity-50 hover:text-blue-600"
+            disabled={currentIndex === 0 || isSubmitting}
           >
-            {lang === "mr" ? "मागे" : "Back"}
+            {lang === "mr" ? formConfig.navigation_buttons.back_mr : formConfig.navigation_buttons.back_en}
           </button>
           <button
             onClick={handleNext}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className={`px-4 py-2 rounded text-white transition-colors ${
+              isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+            }`}
+            disabled={isSubmitting}
           >
-            {lang === "mr" ? "पुढे" : "Next"}
+            {isSubmitting
+              ? lang === "mr"
+                ? "सबमिट करत आहे..."
+                : "Submitting..."
+              : currentIndex < questions.length - 1
+              ? lang === "mr"
+                ? formConfig.navigation_buttons.next_mr
+                : formConfig.navigation_buttons.next_en
+              : lang === "mr"
+              ? formConfig.submit_button_mr
+              : formConfig.submit_button_en}
           </button>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default OnlineServeForm;
