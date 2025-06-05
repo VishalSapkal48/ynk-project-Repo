@@ -106,8 +106,8 @@ export default function CivilWorkChecklistForm() {
     if (formData[currentQuestionKey] === null) {
       alert(
         language === 'mr'
-          ? 'कृपया होय किंवा नाही निवडा!'
-          : 'Please select Yes or No!'
+          ? 'कृपया सर्व प्रश्नांची उत्तरे द्या!'
+          : 'Please answer all questions!'
       );
       return;
     }
@@ -302,7 +302,7 @@ export default function CivilWorkChecklistForm() {
           </div>
           <button
             onClick={handleLanguageToggle}
-            className="text-sm text-gray-600 underline "
+            className="text-sm text-gray-600 underline hover:text-blue-600"
             aria-label={language === 'mr' ? 'Switch to English' : 'Switch to Marathi'}
           >
             {language === 'mr' ? 'English' : 'मराठी'}
@@ -326,7 +326,7 @@ export default function CivilWorkChecklistForm() {
                   <button
                     onClick={handleBack}
                     disabled={step === 1}
-                    className="text-gray-600 px-4 py-2 bg-transparent border-none hover:underline focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-gray-600 px-4 py-2 bg-transparent border-none hover:text-blue-600 hover:underline focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label={equipmentConfig[`back_button_${language}`]}
                   >
                     {equipmentConfig[`back_button_${language}`]}

@@ -9,20 +9,27 @@ import ShopSetupChecklistForm from './components/Shutter/ShopSetupChecklistForm'
 
 import SurveyCompletionSummaryForm from './components/Shutter/SurveyCompletionSummaryForm';
 import TermsandCondition from './components/Shutter/TermsandCondition';
+import ContactInfo from './components/Shutter/ContactInfo';
 
 
 export default function App() {
   return (
   <div className="App">
-    <OnlineSurveyForm/>
+    <ContactInfo/>
     
   {/*  <ShopSetupChecklistForm/>
-   <ShopMeasurementsForm/>
-    <OnlineSurveyForm/>
-    <InternalDeprmentWorking/>
+       <OnlineSurveyForm/>
+       <InternalDeprmentWorking/>
     <CivilWorkChecklistForm/>
-     <TermsandCondition/>
+   <TermsandCondition/>
      <MaterialChecklist/>
+
+
+
+
+
+   <ShopMeasurementsForm/>
+ 
     <SurveyCompletionSummaryForm/>*/}
 
     </div>

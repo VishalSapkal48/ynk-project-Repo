@@ -145,7 +145,7 @@ function TermsandCondition() {
 
     try {
       // Replace 'YOUR_API_ENDPOINT' with your actual backend API URL
-      const response = await axios.post('YOUR_API_ENDPOINT', formData);
+      const response = await axios.post('/API CAlling', formData);
       console.log('Form submission successful:', response.data);
       console.log('Form Data:', formData); // Log form data to verify
       alert(config[language].successMessage); // Show success message via alert

@@ -18,11 +18,11 @@ const formConfig = {
     back_mr: "मागे",
     back_en: "Back",
     next_mr: "पुढे",
-    next_en: "Next",
+    next_en: "Next"
   },
   submit_button_mr: "सबमिट",
   submit_button_en: "Submit",
-  fields: [
+ fields: [
     {
       id: "q1",
       question_mr: "सर तुम्हाला मेजरमेंट टेप बद्दल माहिती आहे का?",
@@ -124,7 +124,7 @@ const formConfig = {
           type: "imageupload",
           message_en: "Upload photos",
           message_mr: "फोटो अपलोड करा",
-          multiple: true,
+          multiple: true
         },
         no: {
           type: "multi",
@@ -136,17 +136,17 @@ const formConfig = {
               options: [
                 { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
                 { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
-                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
-              ],
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q7",
@@ -164,10 +164,10 @@ const formConfig = {
               options: [
                 { value: "corporation", label_en: "Municipal Corporation", label_mr: "कॉरपोरेशन" },
                 { value: "borewell", label_en: "Borewell", label_mr: "बोअरवेल" },
-                { value: "society", label_en: "Society", label_mr: "सोसायटी" },
-              ],
-            },
-          ],
+                { value: "society", label_en: "Society", label_mr: "सोसायटी" }
+              ]
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -179,22 +179,22 @@ const formConfig = {
               options: [
                 { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
                 { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
-                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
-              ],
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q8",
-      question_mr: "पाणी किती वेळ उपलब्ध आहे?",
-      question_en: "For how long is the water available?",
+      question_mr: "पाणी किती वेळ असते?",
+      question_en: "How long does water stay?",
       type: "yesno",
       followup: {
         yes: {
@@ -202,27 +202,27 @@ const formConfig = {
           components: [
             {
               type: "radio",
-              question_en: "For how long is the water available?",
-              question_mr: "पाणी किती वेळ उपलब्ध आहे?",
+              question_en: "How long does water stay?",
+              question_mr: "पाणी किती वेळ असते?",
               options: [
                 { value: "24_hours", label_en: "24 hours", label_mr: "२४ तास" },
                 { value: "2_hours_morning", label_en: "2 hours in the morning", label_mr: "सकाळी २ तास" },
                 {
                   value: "2_hours_morning_evening",
                   label_en: "2 hours in the morning and evening",
-                  label_mr: "सकाळी आणि सायंकाळी २, २ तास",
+                  label_mr: "सकाळी आणि सायंकाळी २, २ तास"
                 },
                 { value: "alternate_day", label_en: "Every alternate day", label_mr: "एक दिवस आड" },
                 { value: "every_3_days", label_en: "Once every 3 days", label_mr: "तीन दिवस आड" },
-                { value: "other", label_en: "Other", label_mr: "इतर" },
-              ],
+                { value: "other", label_en: "Other", label_mr: "इतर" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -234,17 +234,17 @@ const formConfig = {
               options: [
                 { value: "1000_ltr", label_en: "1000 liters", label_mr: "१००० लिटर" },
                 { value: "2000_ltr", label_en: "2000 liters", label_mr: "२००० लिटर" },
-                { value: "other_provision", label_en: "Any other provision", label_mr: "इतर कोणतीही व्यवस्था" },
-              ],
+                { value: "other_provision", label_en: "Any other provision", label_mr: "इतर कोणतीही व्यवस्था" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q9",
@@ -262,10 +262,10 @@ const formConfig = {
               options: [
                 { value: "single_phase", label_en: "Single Phase", label_mr: "सिंगल" },
                 { value: "three_phase", label_en: "Three Phase", label_mr: "3 फेज" },
-                { value: "other", label_en: "Other", label_mr: "इतर" },
-              ],
-            },
-          ],
+                { value: "other", label_en: "Other", label_mr: "इतर" }
+              ]
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -277,17 +277,17 @@ const formConfig = {
               options: [
                 { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
                 { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
-                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
-              ],
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q10",
@@ -307,10 +307,10 @@ const formConfig = {
                 { value: "outside_shop", label_en: "Outside the shop", label_mr: "शॉप च्या बाहेर" },
                 { value: "in_parking", label_en: "In the parking area", label_mr: "पार्किंग मध्ये आहे" },
                 { value: "behind_shop", label_en: "Behind the shop", label_mr: "शॉप च्या पाठीमागे" },
-                { value: "other", label_en: "Other", label_mr: "इतर" },
-              ],
-            },
-          ],
+                { value: "other", label_en: "Other", label_mr: "इतर" }
+              ]
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -322,17 +322,17 @@ const formConfig = {
               options: [
                 { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
                 { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
-                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
-              ],
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q11",
@@ -344,7 +344,7 @@ const formConfig = {
           type: "imageupload",
           message_en: "Upload earthing photos",
           message_mr: "अर्थिंगचे फोटो अपलोड करा",
-          multiple: true,
+          multiple: true
         },
         no: {
           type: "multi",
@@ -356,17 +356,17 @@ const formConfig = {
               options: [
                 { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
                 { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
-                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
-              ],
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q12",
@@ -378,7 +378,7 @@ const formConfig = {
           type: "imageupload",
           message_en: "Upload photos of the drainage connection.",
           message_mr: "ड्रेनेज कनेक्शनचे फोटो अपलोड करा",
-          multiple: true,
+          multiple: true
         },
         no: {
           type: "multi",
@@ -390,103 +390,137 @@ const formConfig = {
               options: [
                 { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
                 { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
-                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
-              ],
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q13",
-      question_mr: "चेंबर चालू आहे का?",
-      question_en: "Is the chamber functioning?",
+      question_mr: "ड्रेनेज चेंबर चालू आहे का?",
+      question_en: "Is the drainage chamber functional?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "imageupload",
+          message_en: "Please upload pictures of the drainage chamber.",
+          message_mr: "कृपया ड्रेनेज चेंबरचा फोटो अपलोड करा.",
+          multiple: true
+        },
+        no: {
+          type: "multi",
+          components: [
+            {
+              type: "radio",
+              question_en: "Who will restart the drainage chamber?",
+              question_mr: "ड्रेनेज चेंबर कोण पुन्हा सुरू करणार?",
+              options: [
+                { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
+                { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" }
+              ]
+            },
+            {
+              type: "input",
+              question_en: "If other, please specify:",
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
+    },
+    {
+      id: "q14",
+      question_mr: "चेंबर कनेक्शन आहे का?",
+      question_en: "Is there a chamber connection?",
       type: "yesno",
       followup: {
         yes: {
           type: "imageupload",
           message_en: "Please upload pictures of the chamber.",
           message_mr: "कृपया चेंबरचा फोटो अपलोड करा.",
-          multiple: true,
+          multiple: true
         },
         no: {
           type: "multi",
           components: [
             {
               type: "radio",
-              question_en: "Who will restart the chamber?",
-              question_mr: "चेंबर कोण पुन्हा सुरू करणार?",
+              question_en: "Who will provide the chamber connection?",
+              question_mr: "चेंबर कनेक्शन कोण देणार?",
               options: [
                 { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
                 { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
-                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
-              ],
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
     },
     {
-      id: "q14",
-      question_mr: "झाकण उघडून तपासणी होते का?",
-      question_en: "Does the lid get opened and checked?",
+      id: "q15",
+      question_mr: "झाकण खोलून तपासले जाते का?",
+      question_en: "Is the lid opened and checked?",
       type: "yesno",
       followup: {
         yes: {
           type: "imageupload",
           message_en: "Please upload pictures.",
           message_mr: "कृपया फोटो अपलोड करा.",
-          multiple: true,
+          multiple: true
         },
         no: {
           type: "multi",
           components: [
             {
               type: "radio",
-              question_en: "Who will check and maintain it?",
+              question_en: "Who will check and maintain the lid?",
               question_mr: "झाकणाची तपासणी आणि देखभाल कोण करणार?",
               options: [
                 { value: "shop_owner", label_en: "Shop Owner", label_mr: "शॉप मालक" },
                 { value: "franchise_owner", label_en: "Franchise Owner", label_mr: "फ्रँचाईझ मालक" },
-                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" },
-              ],
+                { value: "other", label_en: "Other Provision", label_mr: "इतर व्यवस्था" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
+              question_mr: "इतर असल्यास माहिती लिहा"
             },
             {
               type: "radio",
-              question_en: "What is the routine maintenance frequency?",
+              question_en: "What is the maintenance frequency?",
               question_mr: "देखभाल किती वेळाने केली जाते?",
               options: [
                 { value: "weekly", label_en: "Weekly", label_mr: "साप्ताहिक" },
                 { value: "monthly", label_en: "Monthly", label_mr: "मासिक" },
-                { value: "other", label_en: "Other provision", label_mr: "इतर व्यवस्था" },
-              ],
+                { value: "other", label_en: "Other", label_mr: "इतर" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
     },
     {
-      id: "q15",
+      id: "q16",
       question_mr: "पोटमाळा आहे का?",
       question_en: "Is there a loft?",
       type: "yesno",
@@ -498,14 +532,14 @@ const formConfig = {
               type: "imageupload",
               message_en: "Please upload pictures of the loft.",
               message_mr: "कृपया पोटमाळ्याचा फोटो अपलोड करा.",
-              multiple: true,
+              multiple: true
             },
             {
               type: "input",
               question_en: "What is the size of the loft (length × width in feet)?",
-              question_mr: "पोटमाळ्याचा आकार किती आहे? (लांबी × रुंदी फूटमध्ये)",
-            },
-          ],
+              question_mr: "पोटमाळ्याचा आकार किती आहे? (लांबी × रुंदी फूटमध्ये)"
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -513,16 +547,16 @@ const formConfig = {
             {
               type: "input",
               question_en: "What is the alternative arrangement?",
-              question_mr: "पोटमाळ्यासाठी इतर कोणती व्यवस्था आहे का?",
-            },
-          ],
-        },
-      },
+              question_mr: "पोटमाळ्यासाठी इतर कोणती व्यवस्था आहे का?"
+            }
+          ]
+        }
+      }
     },
     {
-      id: "q16",
-      question_mr: "पोटमाळा करायचा आहे का?",
-      question_en: "Do you want to have a loft?",
+      id: "q17",
+      question_mr: "तुम्हाला किती आकाराचा पोटमाला हवा आहे?",
+      question_en: "What size loft do you need?",
       type: "yesno",
       followup: {
         yes: {
@@ -531,9 +565,9 @@ const formConfig = {
             {
               type: "input",
               question_en: "What size of loft would you like to have? (Please specify the dimensions).",
-              question_mr: "तुम्हाला किती आकाराची पोटमाळा हवी आहे? (कृपया मापांची माहिती द्या)",
-            },
-          ],
+              question_mr: "तुम्हाला किती आकाराची पोटमाळा हवी आहे? (कृपया मापांची माहिती द्या)"
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -541,14 +575,14 @@ const formConfig = {
             {
               type: "input",
               question_en: "Is there any other provision for the loft?",
-              question_mr: "पोटमाळ्यासाठी इतर कोणती व्यवस्था आहे का?",
-            },
-          ],
-        },
-      },
+              question_mr: "पोटमाळ्यासाठी इतर कोणती व्यवस्था आहे का?"
+            }
+          ]
+        }
+      }
     },
     {
-      id: "q17",
+      id: "q18",
       question_mr: "शॉप चे शटर चेक करणे आवश्यक आहे का?",
       question_en: "Is it necessary to check the shop shutter?",
       type: "yesno",
@@ -563,15 +597,15 @@ const formConfig = {
               options: [
                 { value: "servicing_required", label_en: "Servicing required", label_mr: "सर्विसिंग करावी लागेल" },
                 { value: "repairing_required", label_en: "Repairing required", label_mr: "रिपेरिंग करावी लागेल" },
-                { value: "other", label_en: "Other", label_mr: "इतर" },
-              ],
+                { value: "other", label_en: "Other", label_mr: "इतर" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -579,14 +613,14 @@ const formConfig = {
             {
               type: "input",
               question_en: "Is a new shutter required?",
-              question_mr: "नवीन शटर आवश्यक आहे का?",
-            },
-          ],
-        },
-      },
+              question_mr: "नवीन शटर आवश्यक आहे का?"
+            }
+          ]
+        }
+      }
     },
     {
-      id: "q18",
+      id: "q19",
       question_mr: "भिंतीला प्लास्टर आहे का?",
       question_en: "Is there plaster on the wall?",
       type: "yesno",
@@ -601,15 +635,15 @@ const formConfig = {
               options: [
                 { value: "cement_plaster", label_en: "Cement plaster", label_mr: "सीमेंट प्लास्टर" },
                 { value: "pop_plaster", label_en: "POP plaster", label_mr: "POP प्लास्टर" },
-                { value: "other", label_en: "Other", label_mr: "इतर" },
-              ],
+                { value: "other", label_en: "Other", label_mr: "इतर" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -618,16 +652,16 @@ const formConfig = {
               type: "imageupload",
               message_en: "Please upload a picture showing the wall condition.",
               message_mr: "कृपया भिंतीची स्थिती दर्शवणारा फोटो अपलोड करा.",
-              multiple: true,
-            },
-          ],
-        },
-      },
+              multiple: true
+            }
+          ]
+        }
+      }
     },
     {
-      id: "q19",
-      question_mr: "रोलिंग शेड आवश्यक आहे का?",
-      question_en: "Is a rolling shed required?",
+      id: "q20",
+      question_mr: "शेलिंग शेड कारायचे आहे का?",
+      question_en: "Is the shelling road work required?",
       type: "yesno",
       followup: {
         yes: {
@@ -637,14 +671,14 @@ const formConfig = {
               type: "imageupload",
               message_en: "Please upload pictures of the rolling shed.",
               message_mr: "कृपया रोलिंग शेडचा फोटो अपलोड करा.",
-              multiple: true,
+              multiple: true
             },
             {
               type: "input",
               question_en: "What is the size of the rolling shed (length × width in feet)?",
-              question_mr: "रोलिंग शेडचा आकार किती आहे? (लांबी × रुंदी फूटमध्ये)",
-            },
-          ],
+              question_mr: "रोलिंग शेडचा आकार किती आहे? (लांबी × रुंदी फूटमध्ये)"
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -652,14 +686,14 @@ const formConfig = {
             {
               type: "input",
               question_en: "Is there any other provision?",
-              question_mr: "इतर कोणती व्यवस्था आहे का?",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर कोणती व्यवस्था आहे का?"
+            }
+          ]
+        }
+      }
     },
     {
-      id: "q20",
+      id: "q21",
       question_mr: "पाण्याची टाकी आहे का?",
       question_en: "Is there a water tank?",
       type: "yesno",
@@ -675,15 +709,15 @@ const formConfig = {
                 { value: "1000ltr", label_en: "1000 liters", label_mr: "१००० लिटर" },
                 { value: "2000ltr", label_en: "2000 liters", label_mr: "२००० लिटर" },
                 { value: "3000ltr", label_en: "3000 liters", label_mr: "३००० लिटर" },
-                { value: "other", label_en: "Other", label_mr: "इतर" },
-              ],
+                { value: "other", label_en: "Other", label_mr: "इतर" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -691,14 +725,14 @@ const formConfig = {
             {
               type: "input",
               question_en: "Is there any other provision?",
-              question_mr: "इतर कोणती व्यवस्था आहे का?",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर कोणती व्यवस्था आहे का?"
+            }
+          ]
+        }
+      }
     },
     {
-      id: "q21",
+      id: "q22",
       question_mr: "टाकीत पाणी चढवण्यासाठी मोटर आहे का?",
       question_en: "Is there a motor to pump water into the tank?",
       type: "yesno",
@@ -714,15 +748,15 @@ const formConfig = {
                 { value: "0.5", label_en: "0.5 HP", label_mr: "०.५ एचपी" },
                 { value: "1", label_en: "1 HP", label_mr: "१ एचपी" },
                 { value: "2", label_en: "2 HP", label_mr: "२ एचपी" },
-                { value: "other", label_en: "Other", label_mr: "इतर" },
-              ],
+                { value: "other", label_en: "Other", label_mr: "इतर" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -730,15 +764,15 @@ const formConfig = {
             {
               type: "input",
               question_en: "Is there any other provision?",
-              question_mr: "इतर कोणती व्यवस्था आहे का?",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर कोणती व्यवस्था आहे का?"
+            }
+          ]
+        }
+      }
     },
     {
-      id: "q22",
-      question_mr: "पोटमाळ्यासाठी जिना आहे का?",
+      id: "q23",
+      question_mr: "पोटमाळा जिना आहे का?",
       question_en: "Is there a staircase/ladder for the loft?",
       type: "yesno",
       followup: {
@@ -749,9 +783,9 @@ const formConfig = {
               type: "imageupload",
               message_en: "Please upload pictures of the loft staircase.",
               message_mr: "कृपया पोटमाळ्याच्या जिन्याचा फोटो अपलोड करा.",
-              multiple: true,
-            },
-          ],
+              multiple: true
+            }
+          ]
         },
         no: {
           type: "multi",
@@ -762,60 +796,45 @@ const formConfig = {
               question_mr: "पोटमाळ्यावर जाण्याची व्यवस्था कोणती आहे?",
               options: [
                 { value: "separate_staircase", label_en: "Separate staircase", label_mr: "स्वतंत्र जिना" },
-                { value: "other", label_en: "Other", label_mr: "इतर" },
-              ],
+                { value: "other", label_en: "Other", label_mr: "इतर" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास कृपया नमूद करा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास कृपया नमूद करा"
+            }
+          ]
+        }
+      }
     },
     {
-      id: "q23",
+      id: "q24",
       question_mr: "काम करताना शेजारील दुकानदाराची परवानगी आहे का?",
       question_en: "Do you have permission from the neighboring shopkeeper to carry out the work?",
       type: "yesno",
       followup: {
         yes: {
-          type: "multi",
-          components: [
-            {
-              type: "radio",
-              question_en: "Till what time is the permission granted?",
-              question_mr: "परवानगी कोणत्या वेळेपर्यंत आहे?",
-              options: [
-                { value: "giving", label_mr: "परमिशन घेऊन देणार", label_en: "Will arrange permission" },
-                { value: "6pm", label_mr: "सायंकाळी सहा वाजेपर्यंत आहे", label_en: "Till 6 PM" },
-                { value: "afternoon", label_mr: "दुपारी बारा नंतर आहे", label_en: "After 12 PM" },
-              ],
-            },
-          ],
+          type: "radio",
+          question_en: "Till what time is the permission granted?",
+          question_mr: "परवानगी कोणत्या वेळेपर्यंत आहे?",
+          options: [
+            { value: "giving", label_mr: "परमिशन घेऊन देणार", label_en: "Will arrange permission" },
+            { value: "6pm", label_mr: "सायंकाळी सहा वाजेपर्यंत आहे", label_en: "Till 6 PM" },
+            { value: "afternoon", label_mr: "दुपारी बारा नंतर आहे", label_en: "After 12 PM" }
+          ]
         },
         no: {
-          type: "multi",
-          components: [
-            {
-              type: "radio",
-              question_en: "What is the plan to obtain permission?",
-              question_mr: "परवानगी मिळवण्याची योजना काय आहे?",
-              options: [
-                { value: "giving", label_mr: "परमिशन घेऊन देणार", label_en: "Will arrange permission" },
-                { value: "6pm", label_mr: "सायंकाळी सहा वाजेपर्यंत आहे", label_en: "Till 6 PM" },
-                { value: "afternoon", label_mr: "दुपारी बारा नंतर आहे", label_en: "After 12 PM" },
-              ],
-            },
-          ],
-        },
-      },
+          type: "input",
+          question_en: "Please specify the plan to obtain permission:",
+          question_mr: "कृपया परवानगी मिळवण्याची योजना सांगा:"
+        }
+      }
     },
     {
-      id: "q24",
-      question_mr: "शॉपमध्ये टॉयलेट-बाथरूम आहे का?",
-      question_en: "Is there a toilet/bathroom in the shop?",
+      id: "q25",
+      question_mr: "शॉप मध्ये टॉयलेट बाथरूम आहे का व त्याचे काही काम करायचे आहे का?",
+      question_en: "Is there a toilet/bathroom in the shop, and does any work need to be done for it?",
       type: "yesno",
       followup: {
         yes: {
@@ -826,40 +845,20 @@ const formConfig = {
               question_mr: "टॉयलेट/बाथरूममध्ये काही दुरुस्तीचे काम करायचे आहे का?",
               question_en: "Is there any repair work needed in the toilet/bathroom?",
               options: [
-                {
-                  value: "leakage",
-                  label_mr: "पाण्याचा गळतीचा प्रश्न आहे",
-                  label_en: "There is a water leakage issue",
-                },
-                {
-                  value: "tiles",
-                  label_mr: "फ्लोअर टाईल खराब आहे",
-                  label_en: "Floor tiles are damaged",
-                },
-                {
-                  value: "wash_basin",
-                  label_mr: "वॉश बेसिन खराब आहे",
-                  label_en: "Wash basin is damaged",
-                },
-                {
-                  value: "no_work",
-                  label_mr: "काहीच काम करायचे नाही",
-                  label_en: "No work needed",
-                },
-              ],
-            },
-          ],
+                { value: "leakage", label_mr: "पाण्याचा गळतीचा प्रश्न आहे", label_en: "There is a water leakage issue" },
+                { value: "tiles", label_mr: "फ्लोअर टाईल खराब आहे", label_en: "Floor tiles are damaged" },
+                { value: "wash_basin", label_mr: "वॉश बेसिन खराब आहे", label_en: "Wash basin is damaged" },
+                { value: "no_work", label_mr: "काहीच काम करायचे नाही", label_en: "No work needed" }
+              ]
+            }
+          ]
         },
-        no: {
-          type: "guide",
-          message_mr: "ठीक आहे. पुढील प्रश्नासाठी पुढे जा.",
-          message_en: "Alright. Proceed to the next question.",
-        },
-      },
+        no: null
+      }
     },
     {
-      id: "q25",
-      question_mr: "शॉपमध्ये काही तोडफोडचे काम आहे का?",
+      id: "q26",
+      question_mr: "शॉप मध्ये काही तोडफोड चे काम आहे का?",
       question_en: "Is there any demolition work required in the shop?",
       type: "yesno",
       followup: {
@@ -877,20 +876,16 @@ const formConfig = {
                 { value: "remove_old_tank", label_mr: "जुनी पाण्याची टाकी काढणे", label_en: "Remove old water tank" },
                 { value: "remove_old_board", label_mr: "जुना बोर्ड काढणे", label_en: "Remove old board" },
                 { value: "remove_old_pop", label_mr: "जुनी POP काढणे", label_en: "Remove old POP" },
-                { value: "remove_rabbit", label_mr: "रॅबीट उचलणे", label_en: "Remove rabbit (raised floor structure)" },
-              ],
-            },
-          ],
+                { value: "remove_rabbit", label_mr: "रॅबीट उचलणे", label_en: "Remove rabbit (raised floor structure)" }
+              ]
+            }
+          ]
         },
-        no: {
-          type: "guide",
-          message_mr: "ठीक आहे. पुढील प्रश्नाकडे चला.",
-          message_en: "Alright, proceed to the next question.",
-        },
-      },
+        no: null
+      }
     },
     {
-      id: "q26",
+      id: "q27",
       question_mr: "शॉप मध्ये काही वीट बांधकामाचं काम आहे का?",
       question_en: "Is there any brick construction work in the shop?",
       type: "yesno",
@@ -898,17 +893,13 @@ const formConfig = {
         yes: {
           type: "input",
           question_en: "Please specify the details of the brick construction work:",
-          question_mr: "कृपया वीट बांधकामाच्या कामाची माहिती द्या:",
+          question_mr: "कृपया वीट बांधकामाच्या कामाची माहिती द्या:"
         },
-        no: {
-          type: "guide",
-          message_mr: "ठीक आहे. पुढील प्रश्नाकडे चला.",
-          message_en: "Alright, proceed to the next question.",
-        },
-      },
+        no: null
+      }
     },
     {
-      id: "q27",
+      id: "q28",
       question_mr: "इंटरनेट कनेक्शन आहे का?",
       question_en: "Is there an internet connection?",
       type: "yesno",
@@ -916,7 +907,7 @@ const formConfig = {
         yes: {
           type: "input",
           question_en: "Please specify the internet connection details:",
-          question_mr: "कृपया इंटरनेट कनेक्शनची माहिती द्या:",
+          question_mr: "कृपया इंटरनेट कनेक्शनची माहिती द्या:"
         },
         no: {
           type: "multi",
@@ -927,26 +918,34 @@ const formConfig = {
               question_mr: "जर इंटरनेट नसेल तर दुसरी कोणती व्यवस्था आहे?",
               options: [
                 { value: "new", label_mr: "नवीन कनेक्शनसाठी बोलत आहोत", label_en: "Talking to a new provider" },
-                { value: "other", label_mr: "इतर", label_en: "Other" },
-              ],
+                { value: "other", label_mr: "इतर", label_en: "Other" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास कृपया नमूद करा:",
-            },
-          ],
-        },
-      },
-    },
-    {
-      id: "q28",
-      question_mr: "इलेक्ट्रिकलचे काम किती आहे?",
-      question_en: "How much electrical work is required?",
-      type: "input",
+              question_mr: "इतर असल्यास कृपया नमूद करा:"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q29",
+      question_mr: "इलेक्ट्रिकलचे काम किती आहे?",
+      question_en: "How much electrical work is required?",
+      type: "yesno",
+      followup: {
+        yes: {
+          type: "input",
+          question_en: "Please provide details",
+          question_mr: "कृपया तपशील द्या"
+        },
+        no: null
+      }
+    },
+    {
+      id: "q30",
       question_mr: "एक्स्जॉस्ट पॉइंट आहे का?",
       question_en: "Is there an exhaust point?",
       type: "yesno",
@@ -955,7 +954,7 @@ const formConfig = {
           type: "imageupload",
           message_en: "Please upload pictures of the exhaust point.",
           message_mr: "कृपया एक्स्जॉस्ट पॉइंटचे फोटो अपलोड करा.",
-          multiple: true,
+          multiple: true
         },
         no: {
           type: "multi",
@@ -966,17 +965,17 @@ const formConfig = {
               question_mr: "इतर पर्याय कोणते आहेत?",
               options: [
                 { value: "talking_to_new_one", label_mr: "नवीन काढणार", label_en: "Planning to install a new one" },
-                { value: "other", label_mr: "इतर", label_en: "Other" },
-              ],
+                { value: "other", label_mr: "इतर", label_en: "Other" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास कृपया नमूद करा:",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास कृपया नमूद करा:"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q31",
@@ -987,7 +986,7 @@ const formConfig = {
         yes: {
           type: "input",
           question_en: "Please specify the chimney requirements:",
-          question_mr: "कृपया चिमणीच्या आवश्यकतांची माहिती द्या:",
+          question_mr: "कृपया चिमणीच्या आवश्यकतांची माहिती द्या:"
         },
         no: {
           type: "multi",
@@ -998,17 +997,17 @@ const formConfig = {
               question_mr: "इतर पर्याय कोणते आहेत?",
               options: [
                 { value: "talking_to_new_one", label_mr: "नवीन काढणार", label_en: "Planning to install a new one" },
-                { value: "other", label_mr: "इतर", label_en: "Other" },
-              ],
+                { value: "other", label_mr: "इतर", label_en: "Other" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास कृपया नमूद करा:",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास कृपया नमूद करा:"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q32",
@@ -1020,7 +1019,7 @@ const formConfig = {
           type: "imageupload",
           message_en: "Upload photo of the space for stage",
           message_mr: "स्टेज टाकण्यासाठी जागेचा फोटो अपलोड करा",
-          multiple: false,
+          multiple: true
         },
         no: {
           type: "multi",
@@ -1031,17 +1030,17 @@ const formConfig = {
               question_mr: "इतर पर्याय कोणते आहेत?",
               options: [
                 { value: "talking_to_new_one", label_mr: "नवीन काढणार", label_en: "Planning to create space" },
-                { value: "other", label_mr: "इतर", label_en: "Other" },
-              ],
+                { value: "other", label_mr: "इतर", label_en: "Other" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास कृपया नमूद करा:",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास कृपया नमूद करा:"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q33",
@@ -1059,17 +1058,18 @@ const formConfig = {
               options: [
                 { value: "100", label_mr: "१०० स्क्वेअर फूट", label_en: "100 sq ft" },
                 { value: "500", label_mr: "५०० स्क्वेअर फूट", label_en: "500 sq ft" },
-                { value: "other", label_mr: "इतर", label_en: "Other" },
-              ],
+                { value: "other", label_mr: "इतर", label_en: "Other" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
         },
-      },
+        no: null
+      }
     },
     {
       id: "q34",
@@ -1080,7 +1080,7 @@ const formConfig = {
         yes: {
           type: "input",
           question_en: "Please specify the battery backup details:",
-          question_mr: "कृपया बॅटरी बॅकअपची माहिती द्या:",
+          question_mr: "कृपया बॅटरी बॅकअपची माहिती द्या:"
         },
         no: {
           type: "multi",
@@ -1091,17 +1091,17 @@ const formConfig = {
               question_mr: "इतर पर्याय कोणते आहेत?",
               options: [
                 { value: "talking_to_new_one", label_mr: "नवीन जोडणार", label_en: "Planning to install a new one" },
-                { value: "other", label_mr: "इतर", label_en: "Other" },
-              ],
+                { value: "other", label_mr: "इतर", label_en: "Other" }
+              ]
             },
             {
               type: "input",
               question_en: "If other, please specify:",
-              question_mr: "इतर असल्यास माहिती लिहा",
-            },
-          ],
-        },
-      },
+              question_mr: "इतर असल्यास माहिती लिहा"
+            }
+          ]
+        }
+      }
     },
     {
       id: "q35",
@@ -1112,10 +1112,11 @@ const formConfig = {
         { value: "east", label_mr: "पूर्व", label_en: "East" },
         { value: "west", label_mr: "पश्चिम", label_en: "West" },
         { value: "south", label_mr: "दक्षिण", label_en: "South" },
-        { value: "north", label_mr: "उत्तर", label_en: "North" },
+        { value: "north", label_mr: "उत्तर", label_en: "North" }
       ],
-    },
-  ],
+      followup: null
+    }
+  ]
 };// Radio Component
 const RadioComponent = ({ lang, comp, qId, compIdx, followupValues, setFollowupValues }) => {
   const value = followupValues?.[qId]?.[compIdx] || "";
@@ -1756,35 +1757,61 @@ const OnlineServeForm = () => {
           handleYesNoChange={handleYesNoChange}
           formData={answers}
         />
+{/* Navigation Buttons: Back & Next */}
+<div className="flex justify-between mt-4 ">
+  {/* Back Button */}
+  <button
+    onClick={handleBack}
+    className="text-gray-500 underline disabled:opacity-50 hover:text-blue-600"
+    disabled={currentIndex === 0 || isSubmitting}
+  >
+    {lang === "mr"
+      ? formConfig.navigation_buttons.back_mr
+      : formConfig.navigation_buttons.back_en}
+  </button>
 
-        <div className="flex justify-between mt-4">
-          <button
-            onClick={handleBack}
-            className="text-gray-500 underline disabled:opacity-50 hover:text-blue-600"
-            disabled={currentIndex === 0 || isSubmitting}
-          >
-            {lang === "mr" ? formConfig.navigation_buttons.back_mr : formConfig.navigation_buttons.back_en}
-          </button>
-          <button
-            onClick={handleNext}
-            className={`px-4 py-2 rounded text-white transition-colors ${
-              isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-            }`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting
-              ? lang === "mr"
-                ? "सबमिट करत आहे..."
-                : "Submitting..."
-              : currentIndex < questions.length - 1
-              ? lang === "mr"
-                ? formConfig.navigation_buttons.next_mr
-                : formConfig.navigation_buttons.next_en
-              : lang === "mr"
-              ? formConfig.submit_button_mr
-              : formConfig.submit_button_en}
-          </button>
-        </div>
+  {/* Next Button: Only if not on last question */}
+  {currentIndex < questions.length - 1 && (
+    <button
+      onClick={handleNext}
+      className={`px-4 py-2 rounded text-white transition-colors ${
+        isSubmitting
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-blue-600 hover:bg-blue-700"
+      }`}
+      disabled={isSubmitting}
+    >
+      {lang === "mr"
+        ? formConfig.navigation_buttons.next_mr
+        : formConfig.navigation_buttons.next_en}
+    </button>
+  )}
+</div>
+
+{/* Submit Button: Only on last question */}
+{currentIndex === questions.length - 1 && (
+  <div className="flex justify-end mt-6">
+    <button
+      onClick={handleSubmit}
+      className={`px-6 py-2 rounded text-white transition-colors ${
+        isSubmitting
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-green-600 hover:bg-green-700"
+      }`}
+      disabled={isSubmitting}
+    >
+      {isSubmitting
+        ? lang === "mr"
+          ? "सबमिट करत आहे..."
+          : "Submitting..."
+        : lang === "mr"
+        ? formConfig.submit_button_mr
+        : formConfig.submit_button_en}
+    </button>
+  </div>
+)}
+
+
       </div>
     </div>
   );
