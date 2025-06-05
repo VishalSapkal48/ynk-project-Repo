@@ -1,8 +1,35 @@
+import React from 'react';
 import './App.css';
-import OnlineSurveyForm from './components/OnlineSurveyForm';
+import InternalDepartmentWorking from './components/InternalDepartmentWorking';
+import  SurveyForms from './components/SurveyForms';
+import ElectricianForm  from './components/ElectricianForm';
+import TablePage from './components/TablePage';
+import InspectionChecklist from './components/InspectionChecklist';
+import EndForm from './components/EndForm';
 
-export default function App() {
+function App() {
   return (
-    <OnlineSurveyForm/>
-  )
+    <div className="App">
+  <InternalDepartmentWorking />
+  
+  
+  
+  <EndForm/>
+      {/* 
+     
+     
+     
+   
+
+  
+   <InspectionChecklist/>
+   <ElectricianForm/>
+  <TablePage/> 
+      */}
+    
+      
+    </div>
+  );
 }
+
+export default App;
