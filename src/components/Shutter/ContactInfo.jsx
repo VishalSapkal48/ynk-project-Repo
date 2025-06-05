@@ -15,18 +15,18 @@ const ContactInfo = () => {
       title: "Register Form",
       subheader: "Reach out to us for any inquiries",
       labels: {
-        branch: "Branch",
-        owner: "Owner",
-        mobile: "Mobile",
+        branch: "Branch Name :",
+        owner: "Owner Name :",
+        mobile: "Mobile Number :",
         start: "Submit"
       },
       placeholders: {
-        branch: "Enter the Branch",
-        owner: "Enter the Owner Name",
-        mobile: "Enter Mobile Number (10 digits)"
+        branch: "Enter the branch name",
+        owner: "Enter the owner name",
+        mobile: "Enter 10-digit mobile number"
       },
       errors: {
-        branch: "Branch is required",
+        branch: "Branch name is required",
         owner: "Owner name is required",
         mobile: "Enter a valid 10-digit mobile number"
       }
@@ -35,18 +35,18 @@ const ContactInfo = () => {
       title: "नोंदणी फॉर्म",
       subheader: "कोणत्याही चौकशीसाठी आमच्याशी संपर्क साधा",
       labels: {
-        branch: "शाखा",
-        owner: "मालक",
-        mobile: "मोबाइल",
+        branch: "शाखेचे नाव  :",
+        owner: "मालकाचे नाव :",
+        mobile: "मोबाइल नंबर :",
         start: "सबमिट करा"
       },
       placeholders: {
-        branch: "शाखा प्रविष्ट करा",
+        branch: "शाखेचे नाव प्रविष्ट करा",
         owner: "मालकाचे नाव प्रविष्ट करा",
-        mobile: "मोबाइल नंबर प्रविष्ट करा (१० अंक)"
+        mobile: "१०-अंकी मोबाइल नंबर प्रविष्ट करा"
       },
       errors: {
-        branch: "शाखा आवश्यक आहे",
+        branch: "शाखेचे नाव आवश्यक आहे",
         owner: "मालकाचे नाव आवश्यक आहे",
         mobile: "वैध १०-अंकी मोबाइल नंबर प्रविष्ट करा"
       }
@@ -72,8 +72,7 @@ const ContactInfo = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error for the field being edited
-    setErrors(prev => ({ ...prev, [name]: '' }));
+    setErrors(prev => ({ ...prev, [name]: '' })); // Clear error for the field being edited
   };
 
   const handleSubmit = (e) => {
@@ -91,7 +90,7 @@ const ContactInfo = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-100">
-      <div className="w-full max-w-lg bg-[#dbeeff] p-8 rounded-2xl border border-blue-200 shadow-lg">
+      <div className="w-full max-w-2xl bg-[#dbeeff] p-8 rounded-2xl border border-blue-200 shadow-lg">
         <div className="bg-white flex justify-between items-center mb-6 px-4 py-3 rounded-lg">
           <div className="flex items-center space-x-4">
             {logo ? (
@@ -117,55 +116,63 @@ const ContactInfo = () => {
           </h2>
           <p className="text-center text-gray-500 mb-6">{config[language].subheader}</p>
 
-          <form onSubmit={handleSubmit} className="w-full bg-white rounded-lg border border-gray-300 p-6 space-y-6">
-            <div>
-              <label className="font-medium text-gray-700 block mb-1">
+          <form onSubmit={handleSubmit} className="w-full p-6 space-y-6">
+            <div className="flex items-center space-x-4 md:space-x-6 border-none">
+              <label className="font-medium text-gray-700 w-1/3 text-right">
                 {config[language].labels.branch}
               </label>
-              <input
-                type="text"
-                name="branch"
-                value={formData.branch}
-                onChange={handleInputChange}
-                placeholder={config[language].placeholders.branch}
-                className={`w-full p-3 border ${errors.branch ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors`}
-              />
-              {errors.branch && <p className="text-red-500 text-xs mt-1">{errors.branch}</p>}
+              <div className="w-2/3">
+                <input
+                  type="text"
+                  name="branch"
+                  value={formData.branch}
+                  onChange={handleInputChange}
+                  placeholder={config[language].placeholders.branch}
+                  className={`w-full p-3 rounded-lg border-none focus:outline-none focus:ring-0 ${errors.branch ? '' : ''} rounded-lg border-none`}
+                />
+                {errors.branch && <p className="text-red-500 text-xs mt-1">{errors.branch}</p>}
+              </div>
             </div>
-            <div>
-              <label className="font-medium text-gray-700 block mb-1">
+            <div className="flex items-center space-x-4 md:space-x-6">
+              <label className="font-medium text-gray-700 w-1/3 text-right">
                 {config[language].labels.owner}
               </label>
-              <input
-                type="text"
-                name="owner"
-                value={formData.owner}
-                onChange={handleInputChange}
-                placeholder={config[language].placeholders.owner}
-                className={`w-full p-3 border ${errors.owner ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors`}
-              />
-              {errors.owner && <p className="text-red-500 text-xs mt-1">{errors.owner}</p>}
+              <div className="w-2/3">
+                <input
+                  type="text"
+                  name="owner"
+                  value={formData.owner}
+                  onChange={handleInputChange}
+                  placeholder={config[language].placeholders.owner}
+                   className={`w-full p-3 rounded-lg border-none focus:outline-none focus:ring-0 ${errors.branch ? '' : ''} rounded-lg border-none`}
+                />
+                {errors.owner && <p className="text-red-500 text-xs mt-1">{errors.owner}</p>}
+              </div>
             </div>
-            <div>
-              <label className="font-medium text-gray-700 block mb-1">
+            <div className="flex items-center space-x-4 md:space-x-6">
+              <label className="font-medium text-gray-700 w-1/3 text-right">
                 {config[language].labels.mobile}
               </label>
-              <input
-                type="tel"
-                name="mobile"
-                value={formData.mobile}
-                onChange={handleInputChange}
-                placeholder={config[language].placeholders.mobile}
-                className={`w-full p-3 border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors`}
-              />
-              {errors.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>}
+              <div className="w-2/3 border-none">
+                <input
+                  type="tel"
+                  name="mobile"
+                  value={formData.mobile}
+                  onChange={handleInputChange}
+                  placeholder={config[language].placeholders.mobile}
+                     className={`w-full p-3 rounded-lg border-none focus:outline-none focus:ring-0 ${errors.branch ? '' : ''} rounded-lg border-none`}
+                />
+                {errors.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>}
+              </div>
             </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              {config[language].labels.start}
-            </button>
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="w-1/3 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+              >
+                {config[language].labels.start}
+              </button>
+            </div>
           </form>
         </div>
       </div>
