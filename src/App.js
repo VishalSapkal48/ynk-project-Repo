@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css';
 import OnlineSurveyForm from './components/OnlineSurveyForm';
 import CivilWorkChecklistForm from './components/Shutter/CivilWorkChecklistForm';
@@ -12,13 +13,13 @@ import TermsandCondition from './components/Shutter/TermsandCondition';
 import ContactInfo from './components/Shutter/ContactInfo';
 
 
-export default function App() {
+function App() {
   return (
   <div className="App">
     <ContactInfo/>
-    
+    <OnlineSurveyForm/>
   {/*  <ShopSetupChecklistForm/>
-       <OnlineSurveyForm/>
+       
        <InternalDeprmentWorking/>
     <CivilWorkChecklistForm/>
    <TermsandCondition/>
@@ -36,3 +37,5 @@ export default function App() {
 
   )
 }
+
+export default App;
