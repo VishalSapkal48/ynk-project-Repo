@@ -157,12 +157,14 @@ const renderField = ({ lang, field, formData, handleYesNoChange, followupValues,
             </span>
           </label>
         </div>
-        {formData[id] !== undefined && field.followup && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            {/* Delegate to renderFollowup for consistent rendering */}
-            {renderFollowup(formData[id], field.followup, lang, id, followupValues, setFollowupValues, handleImageUpload)}
-          </div>
-        )}
+        {formData[id] !== undefined && field.followup && (() => {
+          const followupContent = renderFollowup(formData[id], field.followup, lang, id, followupValues, setFollowupValues, handleImageUpload);
+          return followupContent ? (
+            <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              {followupContent}
+            </div>
+          ) : null;
+        })()}
       </div>
     );
   }
@@ -440,29 +442,88 @@ const OnlineServeForm = () => {
     }));
   };
 
-  const validateQuestion = (index) => {
-    const question = questions[index];
-    const answer = answers[question.id];
-    const followupValue = followupValues[question.id] || {};
-    const files = uploadedFiles[question.id] || {};
+ const validateQuestion = (index) => {
+  const question = questions[index];
+  const answer = answers[question.id];
+  const followupValue = followupValues[question.id] || {};
+  const files = uploadedFiles[question.id] || {};
 
-    // Validate main question
-    if (question.type === "yesno" || question.type === "radio") {
-      if (answer === undefined) {
-        alert(validationMessages[lang].answerRequired);
-        return false;
-      }
-    }
-
-    if (question.type === "input" && !followupValue[0]?.trim()) {
+  // Validate main question
+  if (question.type === "yesno" || question.type === "radio") {
+    if (answer === undefined) {
       alert(validationMessages[lang].answerRequired);
       return false;
     }
+  }
 
-    if (question.type === "multi") {
-      for (let i = 0; i < question.components.length; i++) {
+  if (question.type === "input" && !followupValue[0]?.trim()) {
+    alert(validationMessages[lang].answerRequired);
+    return false;
+  }
+
+  if (question.type === "multi") {
+    for (let i = 0; i < question.components.length; i++) {
+      if (
+        question.components[i].type === "imageupload" &&
+        (!files[i] || files[i].length === 0)
+      ) {
+        alert(validationMessages[lang].imageRequired);
+        return false;
+      }
+    }
+  }
+
+  // Validate follow-up questions
+  if (answer !== undefined && question.followup) {
+    const followup = question.followup[answer ? "yes" : "no"];
+    if (!followup) return true;
+
+    if (followup.type === "radio" && !followupValue[0]) {
+      alert(validationMessages[lang].followupRequired);
+      return false;
+    }
+
+    if (followup.type === "input" && !followupValue[0]?.trim()) {
+      alert(validationMessages[lang].followupRequired);
+      return false;
+    }
+
+    if (
+      followup.type === "checkbox" &&
+      (!followupValue[0] || followupValue[0].length === 0)
+    ) {
+      alert(validationMessages[lang].checkboxRequired);
+      return false;
+    }
+
+    if (
+      followup.type === "imageupload" &&
+      (!files[0] || files[0].length === 0)
+    ) {
+      alert(validationMessages[lang].imageRequired);
+      return false;
+    }
+
+    if (followup.type === "multi" && followup.components) {
+      for (let i = 0; i < followup.components.length; i++) {
+        const comp = followup.components[i];
+        if (comp.type === "radio" && !followupValue[i]) {
+          alert(validationMessages[lang].followupRequired);
+          return false;
+        }
+        if (comp.type === "input" && !followupValue[i]?.trim()) {
+          alert(validationMessages[lang].inputRequired);
+          return false;
+        }
         if (
-          question.components[i].type === "imageupload" &&
+          comp.type === "checkbox" &&
+          (!followupValue[i] || followupValue[i].length === 0)
+        ) {
+          alert(validationMessages[lang].checkboxRequired);
+          return false;
+        }
+        if (
+          comp.type === "imageupload" &&
           (!files[i] || files[i].length === 0)
         ) {
           alert(validationMessages[lang].imageRequired);
@@ -471,69 +532,37 @@ const OnlineServeForm = () => {
       }
     }
 
-    // Validate follow-up questions
-    if (answer !== undefined && question.followup) {
-      const followup = question.followup[answer ? "yes" : "no"];
-      if (!followup) return true;
-
-      if (followup.type === "radio" && !followupValue[0]) {
-        alert(validationMessages[lang].followupRequired);
-        return false;
-      }
-
-      if (followup.type === "input" && !followupValue[0]?.trim()) {
-        alert(validationMessages[lang].followupRequired);
-        return false;
-      }
-
-      if (
-        followup.type === "checkbox" &&
-        (!followupValue[0] || followupValue[0].length === 0)
-      ) {
-        alert(validationMessages[lang].checkboxRequired);
-        return false;
-      }
-
-      if (
-        followup.type === "imageupload" &&
-        (!files[0] || files[0].length === 0)
-      ) {
-        alert(validationMessages[lang].imageRequired);
-        return false;
-      }
-
-      if (followup.fields) {
-        for (let i = 0; i < followup.fields.length; i++) {
-          const comp = followup.fields[i];
-          if (comp.type === "radio" && !followupValue[i]) {
-            alert(validationMessages[lang].followupRequired);
-            return false;
-          }
-          if (comp.type === "input" && !followupValue[i]?.trim()) {
-            alert(validationMessages[lang].inputRequired);
-            return false;
-          }
-          if (
-            comp.type === "checkbox" &&
-            (!followupValue[i] || followupValue[i].length === 0)
-          ) {
-            alert(validationMessages[lang].checkboxRequired);
-            return false;
-          }
-          if (
-            comp.type === "imageupload" &&
-            (!files[i] || files[i].length === 0)
-          ) {
-            alert(validationMessages[lang].imageRequired);
-            return false;
-          }
+    if (followup.fields) {
+      for (let i = 0; i < followup.fields.length; i++) {
+        const comp = followup.fields[i];
+        if (comp.type === "radio" && !followupValue[i]) {
+          alert(validationMessages[lang].followupRequired);
+          return false;
+        }
+        if (comp.type === "input" && !followupValue[i]?.trim()) {
+          alert(validationMessages[lang].inputRequired);
+          return false;
+        }
+        if (
+          comp.type === "checkbox" &&
+          (!followupValue[i] || followupValue[i].length === 0)
+        ) {
+          alert(validationMessages[lang].checkboxRequired);
+          return false;
+        }
+        if (
+          comp.type === "imageupload" &&
+          (!files[i] || files[i].length === 0)
+        ) {
+          alert(validationMessages[lang].imageRequired);
+          return false;
         }
       }
     }
+  }
 
-    return true;
-  };
-
+  return true;
+};
   const handleNext = () => {
     if (!validateQuestion(currentIndex)) {
       return;
