@@ -115,12 +115,14 @@ const ShopMeasurementsFormQuestion = {
       ]
     },
     {
-      id: 'extra_electrical',
-      question_mr: 'एक्स्ट्रा इलेक्ट्रिकल',
+      id: ' Extra Color Work',
+      question_mr: 'एक्स्ट्रा कलर वर्क',
       question_en: 'Extra Electrical',
       type: 'measurement',
       subfields: [
-        { id: 'length', label_mr: 'लांबी (फूट)', label_en: 'Length (ft)', value: 1 }
+        { id: 'length', label_mr: 'लांबी (फूट)', label_en: 'Length (ft)', value: 1 },
+        { id: 'height', label_mr: 'उंची (फूट)', label_en: 'Height (ft)', value: 1 },
+        { id: 'total_sqft', label_mr: 'एकूण चौरस फूट', label_en: 'Total sq ft', value: 1 }
       ]
     },
     {

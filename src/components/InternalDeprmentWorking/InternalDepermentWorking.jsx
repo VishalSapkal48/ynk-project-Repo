@@ -13,7 +13,7 @@ export default function InternalDepartmentWorking() {
 
   // Validation messages
   const validationMessages = {
-       en: {
+    en: {
       answerRequired: 'Please provide an answer to the question.',
       followupRequired: 'Please provide a value for the follow-up question.',
       imageRequired: 'Please upload at least one image or video.',
@@ -46,6 +46,8 @@ export default function InternalDepartmentWorking() {
 
     if (formData[id] === undefined || formData[id] === null) {
       newErrors[id] = validationMessages[language].answerRequired;
+    } else if (formData[id] === 'other' && !formData[`${id}_other`]) {
+      newErrors[id] = validationMessages[language].inputRequired;
     }
 
     return newErrors;
@@ -61,14 +63,20 @@ export default function InternalDepartmentWorking() {
     });
     return newErrors;
   };
-
   const handleYesNoChange = (id, value) => {
-    setFormData({
-      ...formData,
-      [id]: value === 'yes',
-    });
+    let answer;
+    if (value === 'yes') answer = true;
+    else if (value === 'no') answer = false;
+    else answer = 'other';
+
+    setFormData((prev) => ({
+      ...prev,
+      [id]: answer,
+      ...(value !== 'other' && { [`${id}_other`]: '' }) // clear other input if not selected
+    }));
     setErrors((prev) => ({ ...prev, [id]: null }));
   };
+
 
   const handleLanguageToggle = () => {
     setLanguage((prev) => (prev === 'mr' ? 'en' : 'mr'));
@@ -100,8 +108,8 @@ export default function InternalDepartmentWorking() {
       const formattedData = formConfig.fields.reduce((acc, field) => {
         const question = field[`question_${language}`] || field.question_mr;
         const answer = formData[field.id] === true ? (language === 'mr' ? 'होय' : 'Yes') :
-                      formData[field.id] === false ? (language === 'mr' ? 'नाही' : 'No') :
-                      (language === 'mr' ? 'उत्तर दिले नाही' : 'Not answered');
+          formData[field.id] === false ? (language === 'mr' ? 'नाही' : 'No') :
+            (language === 'mr' ? 'उत्तर दिले नाही' : 'Not answered');
         return {
           ...acc,
           [question]: answer,
@@ -153,18 +161,42 @@ export default function InternalDepartmentWorking() {
               {language === 'mr' ? 'होय' : 'Yes'}
             </span>
           </label>
-          <label className="flex items-center space-x-3">
-            <input
-              type="radio"
-              name={id}
-              checked={formData[id] === false}
-              onChange={() => handleYesNoChange(id, 'no')}
-              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-            />
-            <span className={`text-base ${formData[id] === false ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>
-              {language === 'mr' ? 'नाही' : 'No'}
-            </span>
-          </label>
+       <div className="flex flex-col space-y-1">
+  <label className="flex items-center space-x-3">
+    <input
+      type="radio"
+      name={id}
+      checked={formData[id] === 'other'}
+      onChange={() => handleYesNoChange(id, 'other')}
+      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+    />
+    <span
+      className={`text-base ${
+        formData[id] === 'other' ? 'text-gray-800 font-medium' : 'text-gray-600'
+      }`}
+    >
+      {language === 'mr' ? 'इतर' : 'Other'}
+    </span>
+  </label>
+
+  {formData[id] === 'other' && (
+    <div className="ml-6">
+      <input
+        type="text"
+        value={formData[`${id}_other`] || ''}
+        onChange={(e) =>
+          setFormData((prev) => ({
+            ...prev,
+            [`${id}_other`]: e.target.value,
+          }))
+        }
+        placeholder={language === 'mr' ? 'तपशील लिहा' : 'Please specify'}
+        className="w-full border-none rounded px-3 py-2 text-sm "
+      />
+    </div>
+  )}
+</div>
+
         </div>
       </div>
     );
@@ -205,11 +237,10 @@ export default function InternalDepartmentWorking() {
           </button>
           <button
             onClick={handleNext}
-            className={`${
-              currentQuestionIndex < totalQuestions - 1
+            className={`${currentQuestionIndex < totalQuestions - 1
                 ? 'bg-blue-600 hover:bg-blue-700'
                 : 'bg-green-600 hover:bg-green-700'
-            } text-white px-4 py-2 rounded font-medium`}
+              } text-white px-4 py-2 rounded font-medium`}
           >
             {currentQuestionIndex < totalQuestions - 1
               ? formConfig.navigation_buttons?.[`next_${language}`] || (language === 'mr' ? 'पुढे' : 'Next')

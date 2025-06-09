@@ -9,7 +9,7 @@ import lws3Img from "../../assets/Left_wall_Side_3.jpg";
 import rwsImg from "../../assets/Right_wall_side.jpg";
 import bwsImg from "../../assets/B_wall_side.jpg";
 
-const OnlineServeyQuestion = {
+const formConfig = {
   title_mr: "शॉप सर्वे फॉर्म",
   title_en: "Shop Survey Form",
   navigation_buttons: {
@@ -470,7 +470,7 @@ const OnlineServeyQuestion = {
     },
     {
       id: "q15",
-      question_mr: "झाकण खोलून तपासले जाते का?",
+      question_mr: "झाकण खोलून चेक करणे?",
       question_en: "Is the lid opened and checked?",
       type: "yesno",
       followup: {
@@ -581,8 +581,8 @@ const OnlineServeyQuestion = {
     },
     {
       id: "q18",
-      question_mr: "शॉप चे शटर चेक करणे आवश्यक आहे का?",
-      question_en: "Is it necessary to check the shop shutter?",
+      question_mr: "शॉप चे शटर चेक करणे?",
+      question_en: "to check the shop shutter?",
       type: "yesno",
       followup: {
         yes: {
@@ -658,7 +658,7 @@ const OnlineServeyQuestion = {
     },
     {
       id: "q20",
-      question_mr: "शेलिंग शेड कारायचे आहे का?",
+      question_mr: "रोलिंग शेड कारायचे आहे का?",
       question_en: "Is the shelling road work required?",
       type: "yesno",
       followup: {
@@ -930,7 +930,7 @@ const OnlineServeyQuestion = {
     },
     {
       id: "q29",
-      question_mr: "इलेक्ट्रिकलचे काम किती आहे?",
+      question_mr: "इलेक्ट्रिकल चे काम किती आहे?",
       question_en: "How much electrical work is required?",
       type: "yesno",
       followup: {
@@ -1116,4 +1116,32 @@ const OnlineServeyQuestion = {
     }
   ]
 };
+
+
+  // Validation messages
+  const validationMessages = {
+    en: {
+      answerRequired: "Please provide an answer to the question.",
+      followupRequired: "Please provide a value for the follow-up question.",
+      imageRequired: "Please upload at least one image.",
+      checkboxRequired: "Please select at least one option.",
+      inputRequired: "Please specify details for 'Other'.",
+      submitError: "Failed to submit the form. Please try again.",
+      submitSuccess: "Form submitted successfully!",
+    },
+    mr: {
+      answerRequired: "कृपया प्रश्नाचे उत्तर द्या.",
+      followupRequired: "कृपया फॉलो-अप प्रश्नासाठी मूल्य प्रदान करा.",
+      imageRequired: "कृपया किमान एक प्रतिमा अपलोड करा.",
+      checkboxRequired: "कृपया किमान एक पर्याय निवडा.",
+      inputRequired: "कृपया 'इतर' साठी तपशील निर्दिष्ट करा.",
+      submitError: "फॉर्म सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+      submitSuccess: "फॉर्म यशस्वीपणे सबमिट झाला!",
+    },
+  };
+
+const  OnlineServeyQuestion ={
+  formConfig,
+  validationMessages
+}
 export default OnlineServeyQuestion;

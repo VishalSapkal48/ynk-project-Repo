@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import formConfig from './OnlineServeyQuestion.jsx';
+import OnlineServeyQuestion from './OnlineServeyQuestion.jsx';
 import logo from "../../assets/logo.png";
 import axios from "axios";
-// Define formConfig properly
+
+const { formConfig, validationMessages } = OnlineServeyQuestion;
+
 // Radio Component
 const RadioComponent = ({ lang, comp, qId, compIdx, followupValues, setFollowupValues }) => {
   const value = followupValues?.[qId]?.[compIdx] || "";
@@ -25,6 +27,7 @@ const RadioComponent = ({ lang, comp, qId, compIdx, followupValues, setFollowupV
               })
             }
             className="w-4 h-4 text-blue-600"
+            aria-label={lang === "mr" ? option.label_mr : option.label_en}
           />
           <label className="text-base text-gray-600">{lang === "mr" ? option.label_mr : option.label_en}</label>
         </div>
@@ -51,6 +54,7 @@ const InputComponent = ({ lang, comp, qId, compIdx, followupValues, setFollowupV
           })
         }
         className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+        aria-label={lang === "mr" ? comp.question_mr : comp.question_en}
       />
     </div>
   );
@@ -72,6 +76,7 @@ const ImageUploadComponent = ({ lang, comp, qId, compIdx, handleImageUpload }) =
         multiple={comp.multiple}
         onChange={(e) => handleImageUpload(e.target.files, qId, compIdx)}
         className="text-sm text-gray-600"
+        aria-label={lang === "mr" ? comp.message_mr : comp.message_en}
       />
     </div>
   </div>
@@ -104,6 +109,7 @@ const CheckboxComponent = ({ lang, comp, qId, compIdx, followupValues, setFollow
             checked={values.includes(option.value)}
             onChange={() => handleChange(option.value)}
             className="w-4 h-4 text-blue-600"
+            aria-label={lang === "mr" ? option.label_mr : option.label_en}
           />
           <label className="text-base text-gray-600">{lang === "mr" ? option.label_mr : option.label_en}</label>
         </div>
@@ -111,9 +117,8 @@ const CheckboxComponent = ({ lang, comp, qId, compIdx, followupValues, setFollow
     </div>
   );
 };
-
 // Render Field Function
-const renderField = ({ lang, field, formData, handleYesNoChange }) => {
+const renderField = ({ lang, field, formData, handleYesNoChange, followupValues, setFollowupValues, handleImageUpload }) => {
   const question = field[`question_${lang}`] || field.question_mr;
   const id = field.id;
 
@@ -132,6 +137,7 @@ const renderField = ({ lang, field, formData, handleYesNoChange }) => {
               checked={formData[id] === true}
               onChange={() => handleYesNoChange(id, "yes")}
               className="w-4 h-4 text-blue-600"
+              aria-label={lang === "mr" ? "होय" : "Yes"}
             />
             <span className={`text-base ${formData[id] === true ? "text-gray-800 font-medium" : "text-gray-600"}`}>
               {lang === "mr" ? "होय" : "Yes"}
@@ -144,12 +150,19 @@ const renderField = ({ lang, field, formData, handleYesNoChange }) => {
               checked={formData[id] === false}
               onChange={() => handleYesNoChange(id, "no")}
               className="w-4 h-4 text-blue-600"
+              aria-label={lang === "mr" ? "नाही" : "No"}
             />
             <span className={`text-base ${formData[id] === false ? "text-gray-800 font-medium" : "text-gray-600"}`}>
               {lang === "mr" ? "नाही" : "No"}
             </span>
           </label>
         </div>
+        {formData[id] !== undefined && field.followup && (
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            {/* Delegate to renderFollowup for consistent rendering */}
+            {renderFollowup(formData[id], field.followup, lang, id, followupValues, setFollowupValues, handleImageUpload)}
+          </div>
+        )}
       </div>
     );
   }
@@ -157,7 +170,135 @@ const renderField = ({ lang, field, formData, handleYesNoChange }) => {
   return null;
 };
 
-// Question Renderer Component
+// Move renderFollowup outside of QuestionRenderer to make it reusable
+const renderFollowup = (selectedAnswer, followup, lang, qId, followupValues, setFollowupValues, handleImageUpload) => {
+  const followupConfig = followup?.[selectedAnswer ? "yes" : "no"];
+  if (!followupConfig) return null;
+
+  if (followupConfig.type === "imageupload") {
+    return (
+      <ImageUploadComponent
+        lang={lang}
+        comp={followupConfig}
+        qId={qId}
+        compIdx={0}
+        handleImageUpload={handleImageUpload}
+      />
+    );
+  }
+
+  if (followupConfig.type === "guide") {
+    return (
+      <div className="my-2 p-2 bg-red-50 border border-red-300 rounded">
+        <p className="text-base text-gray-800">{lang === "mr" ? followupConfig.message_mr : followupConfig.message_en}</p>
+      </div>
+    );
+  }
+
+  if (followupConfig.type === "radio") {
+    return (
+      <RadioComponent
+        lang={lang}
+        comp={followupConfig}
+        qId={qId}
+        compIdx={0}
+        followupValues={followupValues}
+        setFollowupValues={setFollowupValues}
+      />
+    );
+  }
+
+  if (followupConfig.type === "input") {
+    return (
+      <InputComponent
+        lang={lang}
+        comp={followupConfig}
+        qId={qId}
+        compIdx={0}
+        followupValues={followupValues}
+        setFollowupValues={setFollowupValues}
+      />
+    );
+  }
+
+  if (followupConfig.type === "checkbox") {
+    return (
+      <CheckboxComponent
+        lang={lang}
+        comp={followupConfig}
+        qId={qId}
+        compIdx={0}
+        followupValues={followupValues}
+        setFollowupValues={setFollowupValues}
+      />
+    );
+  }
+
+  if (followupConfig.type === "multi") {
+    return (
+      <div>
+        {followupConfig.components?.map((comp, idx) => {
+          if (comp.type === "radio") {
+            return (
+              <RadioComponent
+                key={idx}
+                lang={lang}
+                comp={comp}
+                qId={qId}
+                compIdx={idx}
+                followupValues={followupValues}
+                setFollowupValues={setFollowupValues}
+              />
+            );
+          }
+          if (comp.type === "input") {
+            return (
+              <InputComponent
+                key={idx}
+                lang={lang}
+                comp={comp}
+                qId={qId}
+                compIdx={idx}
+                followupValues={followupValues}
+                setFollowupValues={setFollowupValues}
+              />
+            );
+          }
+          if (comp.type === "imageupload") {
+            return (
+              <ImageUploadComponent
+                key={idx}
+                lang={lang}
+                comp={comp}
+                qId={qId}
+                compIdx={idx}
+                handleImageUpload={handleImageUpload}
+              />
+            );
+          }
+          if (comp.type === "checkbox") {
+            return (
+              <CheckboxComponent
+                key={idx}
+                lang={lang}
+                comp={comp}
+                qId={qId}
+                compIdx={idx}
+                followupValues={followupValues}
+                setFollowupValues={setFollowupValues}
+              />
+            );
+          }
+          return null;
+        })}
+      </div>
+    );
+  }
+
+  return null;
+};
+
+// Update QuestionRenderer to use the external renderFollowup
 const QuestionRenderer = ({
   lang,
   question,
@@ -169,137 +310,17 @@ const QuestionRenderer = ({
   handleYesNoChange,
   formData,
 }) => {
-  const renderFollowup = (selectedAnswer) => {
-    const followup = question.followup?.[selectedAnswer ? "yes" : "no"];
-    if (!followup) return null;
-
-    if (followup.type === "imageupload") {
-      return (
-        <ImageUploadComponent
-          lang={lang}
-          comp={followup}
-          qId={question.id}
-          compIdx={0}
-          handleImageUpload={handleImageUpload}
-        />
-      );
-    }
-
-    if (followup.type === "guide") {
-      return (
-        <div className="my-2 p-2 bg-red-50 border border-red-300 rounded">
-          <p className="text-base text-gray-800">{lang === "mr" ? followup.message_mr : followup.message_en}</p>
-        </div>
-      );
-    }
-
-    if (followup.type === "radio") {
-      return (
-        <RadioComponent
-          lang={lang}
-          comp={followup}
-          qId={question.id}
-          compIdx={0}
-          followupValues={followupValues}
-          setFollowupValues={setFollowupValues}
-        />
-      );
-    }
-
-    if (followup.type === "input") {
-      return (
-        <InputComponent
-          lang={lang}
-          comp={followup}
-          qId={question.id}
-          compIdx={0}
-          followupValues={followupValues}
-          setFollowupValues={setFollowupValues}
-        />
-      );
-    }
-
-    if (followup.type === "checkbox") {
-      return (
-        <CheckboxComponent
-          lang={lang}
-          comp={followup}
-          qId={question.id}
-          compIdx={0}
-          followupValues={followupValues}
-          setFollowupValues={setFollowupValues}
-        />
-      );
-    }
-
-    if (followup.type === "multi") {
-      return (
-        <div>
-          {followup.components.map((comp, idx) => {
-            if (comp.type === "radio") {
-              return (
-                <RadioComponent
-                  key={idx}
-                  lang={lang}
-                  comp={comp}
-                  qId={question.id}
-                  compIdx={idx}
-                  followupValues={followupValues}
-                  setFollowupValues={setFollowupValues}
-                />
-              );
-            }
-            if (comp.type === "input") {
-              return (
-                <InputComponent
-                  key={idx}
-                  lang={lang}
-                  comp={comp}
-                  qId={question.id}
-                  compIdx={idx}
-                  followupValues={followupValues}
-                  setFollowupValues={setFollowupValues}
-                />
-              );
-            }
-            if (comp.type === "imageupload") {
-              return (
-                <ImageUploadComponent
-                  key={idx}
-                  lang={lang}
-                  comp={comp}
-                  qId={question.id}
-                  compIdx={idx}
-                  handleImageUpload={handleImageUpload}
-                />
-              );
-            }
-            if (comp.type === "checkbox") {
-              return (
-                <CheckboxComponent
-                  key={idx}
-                  lang={lang}
-                  comp={comp}
-                  qId={question.id}
-                  compIdx={idx}
-                  followupValues={followupValues}
-                  setFollowupValues={setFollowupValues}
-                />
-              );
-            }
-            return null;
-          })}
-        </div>
-      );
-    }
-
-    return null;
-  };
-
   const renderYesNo = () => (
     <div className="question">
-      {renderField({ lang, field: question, formData, handleYesNoChange })}
-      {selectedAnswer !== undefined && question.followup && renderFollowup(selectedAnswer)}
+      {renderField({
+        lang,
+        field: question,
+        formData,
+        handleYesNoChange,
+        followupValues,
+        setFollowupValues,
+        handleImageUpload,
+      })}
     </div>
   );
 
@@ -322,6 +343,7 @@ const QuestionRenderer = ({
               checked={selectedAnswer === option.value}
               onChange={() => handleAnswer(option.value)}
               className="w-4 h-4 text-blue-600"
+              aria-label={lang === "mr" ? option.label_mr : option.label_en}
             />
             <label htmlFor={option.value} className="text-base text-gray-600">
               {lang === "mr" ? option.label_mr : option.label_en}
@@ -329,7 +351,7 @@ const QuestionRenderer = ({
           </div>
         ))}
       </div>
-      {selectedAnswer && question.followup && renderFollowup(selectedAnswer)}
+      {selectedAnswer && question.followup && renderFollowup(selectedAnswer, question.followup, lang, question.id, followupValues, setFollowupValues, handleImageUpload)}
     </div>
   );
 
@@ -348,6 +370,7 @@ const QuestionRenderer = ({
           })
         }
         className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+        aria-label={lang === "mr" ? question.question_mr : question.question_en}
       />
     </div>
   );
@@ -381,7 +404,6 @@ const QuestionRenderer = ({
   if (question.type === "multi") return renderMulti();
   return null;
 };
-
 // Main Form Component
 const OnlineServeForm = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -394,28 +416,6 @@ const OnlineServeForm = () => {
   const questions = formConfig.fields;
   const currentQ = questions[currentIndex];
   const selectedAnswer = answers[currentQ.id];
-
-  // Validation messages
-  const validationMessages = {
-    en: {
-      answerRequired: "Please provide an answer to the question.",
-      followupRequired: "Please provide a value for the follow-up question.",
-      imageRequired: "Please upload at least one image.",
-      checkboxRequired: "Please select at least one option.",
-      inputRequired: "Please specify details for 'Other'.",
-      submitError: "Failed to submit the form. Please try again.",
-      submitSuccess: "Form submitted successfully!",
-    },
-    mr: {
-      answerRequired: "कृपया प्रश्नाचे उत्तर द्या.",
-      followupRequired: "कृपया फॉलो-अप प्रश्नासाठी मूल्य प्रदान करा.",
-      imageRequired: "कृपया किमान एक प्रतिमा अपलोड करा.",
-      checkboxRequired: "कृपया किमान एक पर्याय निवडा.",
-      inputRequired: "कृपया 'इतर' साठी तपशील निर्दिष्ट करा.",
-      submitError: "फॉर्म सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
-      submitSuccess: "फॉर्म यशस्वीपणे सबमिट झाला!",
-    },
-  };
 
   const handleAnswer = (value) => {
     setAnswers({ ...answers, [currentQ.id]: value });
@@ -502,18 +502,14 @@ const OnlineServeForm = () => {
         return false;
       }
 
-      if (followup.type === "multi") {
-        for (let i = 0; i < followup.components.length; i++) {
-          const comp = followup.components[i];
+      if (followup.fields) {
+        for (let i = 0; i < followup.fields.length; i++) {
+          const comp = followup.fields[i];
           if (comp.type === "radio" && !followupValue[i]) {
             alert(validationMessages[lang].followupRequired);
             return false;
           }
-          if (
-            comp.type === "input" &&
-            followupValue[i - 1] === "other" &&
-            !followupValue[i]?.trim()
-          ) {
+          if (comp.type === "input" && !followupValue[i]?.trim()) {
             alert(validationMessages[lang].inputRequired);
             return false;
           }
@@ -572,31 +568,24 @@ const OnlineServeForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Replace with your actual API endpoint
-      const response = await axios.post("YOUR_API_ENDPOINT", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const response = await axios.post("YOUR_API_ENDPOINT_HERE", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-
-      console.log("Form submission successful:", response.data);
-      console.log("Form Data:", {
-        answers,
-        followupValues,
-        uploadedFiles: Object.keys(uploadedFiles).reduce((acc, qId) => ({
-          ...acc,
-          [qId]: Object.keys(uploadedFiles[qId]).reduce(
-            (compAcc, compIdx) => ({
-              ...compAcc,
-              [compIdx]: uploadedFiles[qId][compIdx].map((file) => file.name),
-            }),
-            {}
-          ),
-        }), {}),
-      });
-
-      alert(validationMessages[lang].submitSuccess);
+      alert(lang === "mr" ? "फॉर्म यशस्वीरीत्या सबमिट केला!" : "Form submitted successfully!");
+      // Reset form after submission
+      setAnswers({});
+      setFollowupValues({});
+      setUploadedFiles({});
+      setCurrentIndex(0);
     } catch (error) {
-      console.error("Form submission failed:", error);
-      alert(validationMessages[lang].submitError);
+      console.error("Submission error:", error);
+      alert(
+        lang === "mr"
+          ? "फॉर्म सबमिट करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा."
+          : "Error submitting form. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -623,6 +612,7 @@ const OnlineServeForm = () => {
           <button
             onClick={handleLanguageToggle}
             className="text-sm text-gray-600 underline hover:text-blue-600"
+            aria-label={lang === "mr" ? "Switch to English" : "Switch to Marathi"}
           >
             {lang === "mr" ? "English" : "मराठी"}
           </button>
@@ -643,61 +633,59 @@ const OnlineServeForm = () => {
           handleYesNoChange={handleYesNoChange}
           formData={answers}
         />
-{/* Navigation Buttons: Back & Next */}
-<div className="flex justify-between mt-4 ">
-  {/* Back Button */}
-  <button
-    onClick={handleBack}
-    className="text-gray-500 underline disabled:opacity-50 hover:text-blue-600"
-    disabled={currentIndex === 0 || isSubmitting}
-  >
-    {lang === "mr"
-      ? formConfig.navigation_buttons.back_mr
-      : formConfig.navigation_buttons.back_en}
-  </button>
 
-  {/* Next Button: Only if not on last question */}
-  {currentIndex < questions.length - 1 && (
-    <button
-      onClick={handleNext}
-      className={`px-4 py-2 rounded text-white transition-colors ${
-        isSubmitting
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-blue-600 hover:bg-blue-700"
-      }`}
-      disabled={isSubmitting}
-    >
-      {lang === "mr"
-        ? formConfig.navigation_buttons.next_mr
-        : formConfig.navigation_buttons.next_en}
-    </button>
-  )}
-</div>
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={handleBack}
+            className="text-gray-500 underline disabled:opacity-50 hover:text-blue-600"
+            disabled={currentIndex === 0 || isSubmitting}
+            aria-label={lang === "mr" ? formConfig.navigation_buttons.back_mr : formConfig.navigation_buttons.back_en}
+          >
+            {lang === "mr" ? formConfig.navigation_buttons.back_mr : formConfig.navigation_buttons.back_en}
+          </button>
 
-{/* Submit Button: Only on last question */}
-{currentIndex === questions.length - 1 && (
-  <div className="flex justify-end mt-6">
-    <button
-      onClick={handleSubmit}
-      className={`px-6 py-2 rounded text-white transition-colors ${
-        isSubmitting
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-green-600 hover:bg-green-700"
-      }`}
-      disabled={isSubmitting}
-    >
-      {isSubmitting
-        ? lang === "mr"
-          ? "सबमिट करत आहे..."
-          : "Submitting..."
-        : lang === "mr"
-        ? formConfig.submit_button_mr
-        : formConfig.submit_button_en}
-    </button>
-  </div>
-)}
+          {currentIndex < questions.length - 1 && (
+            <button
+              onClick={handleNext}
+              className={`px-4 py-2 rounded text-white transition-colors ${
+                isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+              }`}
+              disabled={isSubmitting}
+              aria-label={lang === "mr" ? formConfig.navigation_buttons.next_mr : formConfig.navigation_buttons.next_en}
+            >
+              {lang === "mr" ? formConfig.navigation_buttons.next_mr : formConfig.navigation_buttons.next_en}
+            </button>
+          )}
+        </div>
 
-
+        {currentIndex === questions.length - 1 && (
+          <div className="flex justify-end mt-6">
+            <button
+              onClick={handleSubmit}
+              className={`px-6 py-2 rounded text-white transition-colors ${
+                isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+              }`}
+              disabled={isSubmitting}
+              aria-label={
+                isSubmitting
+                  ? lang === "mr"
+                    ? "सबमिट करत आहे..."
+                    : "Submitting..."
+                  : lang === "mr"
+                  ? formConfig.submit_button_mr
+                  : formConfig.submit_button_en
+              }
+            >
+              {isSubmitting
+                ? lang === "mr"
+                  ? "सबमिट करत आहे..."
+                  : "Submitting..."
+                : lang === "mr"
+                ? formConfig.submit_button_mr
+                : formConfig.submit_button_en}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

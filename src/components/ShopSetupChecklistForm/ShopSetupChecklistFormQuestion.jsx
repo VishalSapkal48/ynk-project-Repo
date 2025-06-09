@@ -1,4 +1,4 @@
-const ShopSetupChecklistFormQuestion= {
+const formConfig = {
   id: 'shop_setup_checklist',
   title_mr: 'दुकान सेटअप तपासणी यादी',
   title_en: 'Shop Setup Checklist',
@@ -6,8 +6,8 @@ const ShopSetupChecklistFormQuestion= {
   submission_message_en: 'Your form has been successfully submitted!\nWe will contact you soon.',
   fields: [
     {
-     "id": "shop_possession",
-      "question_mr": "शॉप चा ताबा आपल्याकडे आला आहेका,आपल्याला मिळाला आहे का?",
+      "id": "shop_possession",
+      "question_mr": "शॉप चा ताबा आपल्याकडे आला आहे का,आपल्याला मिळाला आहे का?",
       "question_en": "Has the possession of the shop been received?",
       "type": "yesno",
       "required": true,
@@ -17,7 +17,7 @@ const ShopSetupChecklistFormQuestion= {
           "message_en": "Shop possession has been received."
         },
         "no": {
-          "message_mr": "शॉप ताबा अद्याप मिळाला नाही.",
+          "message_mr": "नाही भेटला अजून.",
           "message_en": "Shop possession has not yet been received.",
           "fields": [
             {
@@ -70,7 +70,7 @@ const ShopSetupChecklistFormQuestion= {
     },
     {
       id: 'shop_vacant',
-      question_mr: 'शॉप पूर्णपणे रिकामे आहे का?',
+      question_mr: 'शॉप पूर्णपणे मोकळे आहे का?',
       question_en: 'Is the shop completely vacant?',
       type: 'yesno',
       required: true,
@@ -101,7 +101,7 @@ const ShopSetupChecklistFormQuestion= {
           fields: [
             {
               id: 'vacate_responsible',
-              question_mr: 'शॉप कोण रिकामे करणार आहे?',
+              question_mr: ' कोण खाली करणार आहे?',
               question_en: 'Who will vacate the shop?',
               type: 'radio',
               required: true,
@@ -125,7 +125,7 @@ const ShopSetupChecklistFormQuestion= {
             },
             {
               id: 'call_again_vacate',
-              question_mr: 'पुन्हा फोन कधी करावा?',
+              question_mr: 'पुन्हा फोन कधी करू?',
               question_en: 'When should we call again?',
               type: 'radio',
               required: true,
@@ -370,4 +370,41 @@ const ShopSetupChecklistFormQuestion= {
     next_en: 'Next',
   },
 };
+
+// Validation messages (unchanged)
+const validationMessages = {
+  en: {
+    answerRequired: 'Please provide an answer to the question.',
+    followupRequired: 'Please provide a value for the follow-up question.',
+    imageRequired: 'Please upload at least one image or video.',
+    checkboxRequired: 'Please select at least one option.',
+    inputRequired: 'Please specify details for "Other".',
+    submitError: 'Failed to submit the form. Please try again.',
+    submitSuccess: 'Form submitted successfully!',
+    invalidDateFormat: 'Please enter a valid date (YYYY-MM-DD)',
+    invalidDate: 'Please enter a valid date',
+    pastDate: 'Date cannot be in the past',
+  },
+  mr: {
+    answerRequired: 'कृपया प्रश्नाचे उत्तर द्या.',
+    followupRequired: 'कृपया फॉलो-अप प्रश्नासाठी मूल्य प्रदान करा.',
+    imageRequired: 'कृपया किमान एक प्रतिमा किंवा व्हिडिओ अपलोड करा.',
+    checkboxRequired: 'कृपया किमान एक पर्याय निवडा.',
+    inputRequired: 'कृपया "इतर" साठी तपशील निर्दिष्ट करा.',
+    submitError: 'फॉर्म सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.',
+    submitSuccess: 'फॉर्म यशस्वीपणे सबमिट झाला!',
+    invalidDateFormat: 'कृपया वैध तारीख प्रविष्ट करा (YYYY-MM-DD)',
+    invalidDate: 'कृपया वैध तारीख प्रविष्ट करा',
+    pastDate: 'तारीख भूतकाळातील असू शकत नाही',
+  },
+};
+
+
+const ShopSetupChecklistFormQuestion =
+{
+  formConfig,
+  validationMessages
+}
+
+
 export default ShopSetupChecklistFormQuestion;

@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import logo from '../../assets/logo.png';
-import formConfig from './ShopSetupChecklistFormQuestion'; // Importing the form configuration
+import ShopSetupChecklistFormQuestion from './ShopSetupChecklistFormQuestion'; // Importing the form configuration
+
+const {
+  formConfig,
+  validationMessages
+} = ShopSetupChecklistFormQuestion;
 
 export default function ShopSetupChecklistForm() {
   const [formData, setFormData] = useState({});
@@ -12,34 +17,6 @@ export default function ShopSetupChecklistForm() {
   const [apiError, setApiError] = useState(null);
 
   const totalQuestions = formConfig.fields.length;
-
-  // Validation messages (unchanged)
-  const validationMessages = {
-    en: {
-      answerRequired: 'Please provide an answer to the question.',
-      followupRequired: 'Please provide a value for the follow-up question.',
-      imageRequired: 'Please upload at least one image or video.',
-      checkboxRequired: 'Please select at least one option.',
-      inputRequired: 'Please specify details for "Other".',
-      submitError: 'Failed to submit the form. Please try again.',
-      submitSuccess: 'Form submitted successfully!',
-      invalidDateFormat: 'Please enter a valid date (YYYY-MM-DD)',
-      invalidDate: 'Please enter a valid date',
-      pastDate: 'Date cannot be in the past',
-    },
-    mr: {
-      answerRequired: 'कृपया प्रश्नाचे उत्तर द्या.',
-      followupRequired: 'कृपया फॉलो-अप प्रश्नासाठी मूल्य प्रदान करा.',
-      imageRequired: 'कृपया किमान एक प्रतिमा किंवा व्हिडिओ अपलोड करा.',
-      checkboxRequired: 'कृपया किमान एक पर्याय निवडा.',
-      inputRequired: 'कृपया "इतर" साठी तपशील निर्दिष्ट करा.',
-      submitError: 'फॉर्म सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.',
-      submitSuccess: 'फॉर्म यशस्वीपणे सबमिट झाला!',
-      invalidDateFormat: 'कृपया वैध तारीख प्रविष्ट करा (YYYY-MM-DD)',
-      invalidDate: 'कृपया वैध तारीख प्रविष्ट करा',
-      pastDate: 'तारीख भूतकाळातील असू शकत नाही',
-    },
-  };
 
   // Validate current field (unchanged)
   const validateCurrentField = (field) => {
@@ -147,7 +124,7 @@ export default function ShopSetupChecklistForm() {
 
   const handleLanguageToggle = () => {
     setLanguage(prev => (prev === 'mr' ? 'en' : 'mr'));
-    setErrors({}); // Clear errors on language change
+    setErrors({});
   };
 
   const submitFormToAPI = async (data) => {
@@ -159,18 +136,6 @@ export default function ShopSetupChecklistForm() {
         formDataToSend.append(key, data[key]);
       }
     });
-
-    try {
-      const response = await axios.post('/api', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
-    }
   };
 
   const handleNext = async () => {
@@ -241,7 +206,6 @@ export default function ShopSetupChecklistForm() {
                 {language === 'mr' ? 'नाही' : 'No'}
               </span>
             </label>
-            {/* Removed inline error display: {errors[id] && <p className="text-red-500 text-sm mt-2">{errors[id]}</p>} */}
           </div>
         )}
 
@@ -258,9 +222,8 @@ export default function ShopSetupChecklistForm() {
                     className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
                   <span
-                    className={`ml-2 text-base ${
-                      formData[id] === option.value ? 'text-gray-700 font-medium' : 'text-gray-600'
-                    }`}
+                    className={`ml-2 text-base ${formData[id] === option.value ? 'text-gray-700 font-medium' : 'text-gray-600'
+                      }`}
                   >
                     {option[`label_${language}`] || option.label_mr}
                   </span>
@@ -272,7 +235,6 @@ export default function ShopSetupChecklistForm() {
                 )}
               </label>
             ))}
-            {/* Removed inline error display: {errors[id] && <p className="text-red-500 text-sm mt-2">{errors[id]}</p>} */}
           </div>
         )}
 
@@ -284,11 +246,9 @@ export default function ShopSetupChecklistForm() {
               placeholder={field[`placeholder_${language}`] || field.placeholder_mr}
               value={formData[id] || ''}
               onChange={e => handleTextChange(id, e.target.value)}
-              className={`w-full border-2 rounded-lg p-3 transition-colors ${
-                errors[id] ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
-              }`}
+              className={`w-full border-2 rounded-lg p-3 transition-colors ${errors[id] ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
+                }`}
             />
-            {/* Removed inline error display: {errors[id] && <p className="text-red-500 text-sm mt-2">{errors[id]}</p>} */}
           </div>
         )}
 
@@ -306,10 +266,8 @@ export default function ShopSetupChecklistForm() {
                 {language === 'mr' ? 'फाइल निवडली: ' : 'File selected: '} {formData[id].name}
               </p>
             )}
-            {/* Removed inline error display: {errors[id] && <p className="text-red-500 text-sm mt-2">{errors[id]}</p>} */}
           </div>
         )}
-
         {formData[id] !== undefined && field.followup && field.type === 'yesno' && (
           <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
             <p className="text-gray-700 mb-2">{field.followup[formData[id] ? 'yes' : 'no'][`message_${language}`]}</p>
@@ -351,7 +309,6 @@ export default function ShopSetupChecklistForm() {
   }
 
   const currentField = formConfig.fields[currentQuestionIndex];
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
@@ -367,13 +324,8 @@ export default function ShopSetupChecklistForm() {
             {language === 'mr' ? 'English' : 'मराठी'}
           </button>
         </div>
-
         <h2 className="text-lg text-center  font-bold mb-2">{formConfig[`title_${language}`]}</h2>
-
         <div className="mb-4">{renderField(currentField)}</div>
-
-      
-
         <div className="flex justify-between items-center mt-4">
           <button
             onClick={handleBack}
@@ -384,9 +336,8 @@ export default function ShopSetupChecklistForm() {
           </button>
           <button
             onClick={handleNext}
-            className={`${
-              currentQuestionIndex < totalQuestions - 1 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'
-            } text-white px-4 py-2 rounded font-medium`}
+            className={`${currentQuestionIndex < totalQuestions - 1 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'
+              } text-white px-4 py-2 rounded font-medium`}
           >
             {currentQuestionIndex < totalQuestions - 1
               ? formConfig.navigation_buttons?.[`next_${language}`] || (language === 'mr' ? 'पुढे' : 'Next')

@@ -7,7 +7,7 @@ const InternalDeprmentWorkingQuestion = {
       id: 'developer_quotation',
       question_mr: 'डेवलपर टीमने सेल्स डिपार्टमेंटला कोटेशन पाठवले का?',
       question_en: 'Did the developer team send the quotation to the sales department?',
-      type: 'yesno',
+      type: 'yesOther',
     },
     {
       id: 'sales_to_owner_quotation',
@@ -47,7 +47,7 @@ const InternalDeprmentWorkingQuestion = {
     },
     {
       id: 'engineer_assigned',
-      question_mr: 'लेआउट फायनल झाल्यानंतर त्या साईटसाठी इंजिनिअर नेमले का?',
+      question_mr: 'लेआउट फायनल झाल्यानंतर त्या साईटसाठी इंजिनिअर असाइन केले का?',
       question_en: 'Was an engineer assigned to the site after layout finalization?',
       type: 'yesno',
     },

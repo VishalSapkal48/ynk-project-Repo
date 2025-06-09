@@ -4,26 +4,37 @@ import logo from '../../assets/logo.png'; // Ensure this path is correct
 import CivilWorkChecklistFormQuestion from './CivilWorkChecklistFormQuestion';
 
 const {
+  equipmentConfig,
   questions,
   tableData1,
   tableData2,
   tableData3,
   tableData4,
   tableData5,
-  
-  equipmentConfig
+  tableData6,
+  tableData7,
+  tableData8,
+  tableData9,
+  tableData10,
+  config,
 } = CivilWorkChecklistFormQuestion;
 
 export default function CivilWorkChecklistForm() {
   const [formData, setFormData] = useState({
-    step1_understood: null,
-    step2_understood: null,
-    step3_understood: null,
-    step4_understood: null,
-    step5_understood: null,
+    cctv1: null,
+    internet2: null,
+    speaker3: null,
+    painting_understood: null,
+    plumber_understood: null,
+    electrician_switch_socket_understood: null,
+    electrician_material_understood: null,
+    electrician_wire_understood: null,
+    pop_tiles_understood: null,
+    gas_piping_understood: null,
   });
   const [language, setLanguage] = useState('mr');
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLanguageToggle = () => {
     setLanguage((prev) => (prev === 'mr' ? 'en' : 'mr'));
@@ -37,12 +48,12 @@ export default function CivilWorkChecklistForm() {
   };
 
   const handleNext = () => {
-    const currentQuestionKey = questions[step - 1].key;
-    if (formData[currentQuestionKey] === null) {
+    const stepKey = questions[step - 1].key;
+    if (formData[stepKey] === null) {
       alert(
         language === 'mr'
-          ? 'कृपया सर्व प्रश्नांची उत्तरे द्या!'
-          : 'Please answer all questions!'
+          ? 'कृपया प्रश्नाचे उत्तर द्या!'
+          : 'Please answer the question!'
       );
       return;
     }
@@ -65,8 +76,11 @@ export default function CivilWorkChecklistForm() {
           ? 'कृपया सर्व प्रश्नांची उत्तरे द्या!'
           : 'Please answer all questions!'
       );
+      setStep(questions.findIndex((q) => q.key === unanswered.key) + 1);
       return;
     }
+
+    setIsSubmitting(true);
 
     const formattedData = questions.reduce((acc, q) => {
       const question = q[`question_${language}`];
@@ -91,8 +105,8 @@ export default function CivilWorkChecklistForm() {
     console.log('Submitted Data:', formattedData);
 
     try {
-      // Replace 'API call' with your actual API endpoint
-      const response = await axios.post( 'API CALLING...', // Placeholder; replace with actual endpoint
+      const response = await axios.post(
+        'YOUR_API_ENDPOINT', // Replace with actual endpoint
         { ...formData, language },
         {
           headers: {
@@ -114,49 +128,49 @@ export default function CivilWorkChecklistForm() {
           ? `फॉर्म सबमिट करण्यात त्रुटी: ${error.message}`
           : `Error submitting form: ${error.message}`
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const renderTable = (data) => (
-    <div className="overflow-x-auto mt-2">
-      <table className="table-auto w-full border border-gray-300 text-sm">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border px-4 py-2 text-center">
-              {language === 'mr' ? 'उपकरण' : 'Item'}
-            </th>
-            <th className="border px-4 py-2 text-center">
-              {language === 'mr' ? 'कंपनी' : 'Company'}
-            </th>
-            <th className="border px-4 py-2 text-center">
-              {language === 'mr' ? 'विशिष्टता' : 'Specification'}
-            </th>
-            <th className="border px-4 py-2 text-center">
-              {language === 'mr' ? 'प्रमाण' : 'Qty'}
-            </th>
-            {data.some((row) => row.work) && (
-              <th className="border px-4 py-2 text-center">
-                {language === 'mr' ? 'काम' : 'Work'}
-              </th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, idx) => (
-            <tr key={idx} className="hover:bg-gray-50">
-              <td className="border px-4 py-2">{row.item}</td>
-              <td className="border px-4 py-2">{row.company}</td>
-              <td className="border px-4 py-2">{row.specification}</td>
-              <td className="border px-4 py-2">{row.qty}</td>
-              {data.some((row) => row.work) && (
-                <td className="border px-4 py-2">{row.work || '-'}</td>
-              )}
+  const renderTable = (data, step) => {
+    // Define steps where the Work column should be shown
+    const showWorkColumn = [5, 6, 8, 9, 10].includes(step);
+
+    // Use all headers if Work column is shown, otherwise exclude Work
+    const headers = showWorkColumn
+      ? config[language].tableHeaders
+      : config[language].tableHeaders.slice(0, -1);
+
+    return (
+      <div className="overflow-x-auto mt-2">
+        <table className="table-auto w-full border border-gray-300 text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              {headers.map((header, idx) => (
+                <th key={idx} className="border px-4 py-2 text-center">
+                  {header}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+          </thead>
+          <tbody>
+            {data.map((row, idx) => (
+              <tr key={idx} className="hover:bg-gray-50">
+                <td className="border px-4 py-2">{row.item}</td>
+                <td className="border px-4 py-2">{row.company}</td>
+                <td className="border px-4 py-2">{row.specification}</td>
+                <td className="border px-4 py-2">{row.qty}</td>
+                {showWorkColumn && (
+                  <td className="border px-4 py-2">{row.work || '-'}</td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   const yesNoQuestion = (stepKey, questionText) => (
     <div className="mt-6 flex flex-col sm:flex-row justify-between items-center">
@@ -168,6 +182,7 @@ export default function CivilWorkChecklistForm() {
             name={stepKey}
             checked={formData[stepKey] === true}
             onChange={() => handleYesNoChange(stepKey, true)}
+            className="w-4 h-4 text-blue-600"
             aria-label={language === 'mr' ? 'होय' : 'Yes'}
           />
           {language === 'mr' ? 'होय' : 'Yes'}
@@ -178,6 +193,7 @@ export default function CivilWorkChecklistForm() {
             name={stepKey}
             checked={formData[stepKey] === false}
             onChange={() => handleYesNoChange(stepKey, false)}
+            className="w-4 h-4 text-blue-600"
             aria-label={language === 'mr' ? 'नाही' : 'No'}
           />
           {language === 'mr' ? 'नाही' : 'No'}
@@ -189,33 +205,63 @@ export default function CivilWorkChecklistForm() {
   const stepConfig = [
     {
       step: 1,
-      title: language === 'mr' ? 'उपकरणांची यादी' : 'Equipment List',
+      title: config[language].title1,
       table: tableData1,
-      questionKey: 'step1_understood',
+      questionKey: 'cctv_understood',
     },
     {
       step: 2,
-      title: language === 'mr' ? 'इंटरनेट माहिती' : 'Internet Details',
+      title: config[language].title2,
       table: tableData2,
-      questionKey: 'step2_understood',
+      questionKey: 'internet_understood',
     },
     {
       step: 3,
-      title: language === 'mr' ? 'स्पीकर आणि ॲम्प्लिफायर माहिती' : 'Speaker and Amplifier Details',
+      title: config[language].title3,
       table: tableData3,
-      questionKey: 'step3_understood',
+      questionKey: 'speaker_understood',
     },
     {
       step: 4,
-      title: language === 'mr' ? 'पेंट आणि लोगो माहिती' : 'Paint and Logo Details',
+      title: config[language].title4,
       table: tableData4,
-      questionKey: 'step4_understood',
+      questionKey: 'painting_understood',
     },
     {
       step: 5,
-      title: language === 'mr' ? 'पाण्याच्या टाकी आणि नळ माहिती' : 'Water Tank and Plumbing Details',
+      title: config[language].title5,
       table: tableData5,
-      questionKey: 'step5_understood',
+      questionKey: 'plumber_understood',
+    },
+    {
+      step: 6,
+      title: config[language].title6,
+      table: tableData6,
+      questionKey: 'electrician_switch_socket_understood',
+    },
+    {
+      step: 7,
+      title: config[language].title7,
+      table: tableData7,
+      questionKey: 'electrician_material_understood',
+    },
+    {
+      step: 8,
+      title: config[language].title8,
+      table: tableData8,
+      questionKey: 'electrician_wire_understood',
+    },
+    {
+      step: 9,
+      title: config[language].title9,
+      table: tableData9,
+      questionKey: 'pop_tiles_understood',
+    },
+    {
+      step: 10,
+      title: config[language].title10,
+      table: tableData10,
+      questionKey: 'gas_piping_understood',
     },
   ];
 
@@ -252,7 +298,7 @@ export default function CivilWorkChecklistForm() {
             step === config.step && (
               <div key={config.step}>
                 <h3 className="mb-3 font-medium text-gray-700">{config.title}</h3>
-                {renderTable(config.table)}
+                {renderTable(config.table, config.step)}
                 {yesNoQuestion(
                   config.questionKey,
                   questions[config.step - 1][`question_${language}`]
@@ -260,7 +306,7 @@ export default function CivilWorkChecklistForm() {
                 <div className="flex justify-between mt-6">
                   <button
                     onClick={handleBack}
-                    disabled={step === 1}
+                    disabled={step === 1 || isSubmitting}
                     className="text-gray-600 px-4 py-2 bg-transparent border-none hover:text-blue-600 hover:underline focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label={equipmentConfig[`back_button_${language}`]}
                   >
@@ -269,15 +315,25 @@ export default function CivilWorkChecklistForm() {
                   {step === questions.length ? (
                     <button
                       onClick={handleSubmit}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 focus:outline-none"
+                      disabled={isSubmitting}
+                      className={`bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 focus:outline-none ${
+                        isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
                       aria-label={equipmentConfig[`submit_button_${language}`]}
                     >
-                      {equipmentConfig[`submit_button_${language}`]}
+                      {isSubmitting
+                        ? language === 'mr'
+                          ? 'सबमिट करत आहे...'
+                          : 'Submitting...'
+                        : equipmentConfig[`submit_button_${language}`]}
                     </button>
                   ) : (
                     <button
                       onClick={handleNext}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none"
+                      disabled={isSubmitting}
+                      className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none ${
+                        isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
                       aria-label={equipmentConfig[`next_button_${language}`]}
                     >
                       {equipmentConfig[`next_button_${language}`]}

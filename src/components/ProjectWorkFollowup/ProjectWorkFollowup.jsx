@@ -199,7 +199,7 @@ export default function ProjectWorkFollowup() {
     const isYesSelected = currentFieldData?.answer === true;
 
     return (
-      <div className="mb-6 border p-4 rounded-lg bg-white">
+      <div className="">
         <p className="text-gray-700 text-base mb-4 leading-relaxed">
           {question}
         </p>
@@ -211,7 +211,7 @@ export default function ProjectWorkFollowup() {
               name={parentId ? `${parentId}-${id}` : id}
               checked={currentFieldData?.answer === true}
               onChange={() => handleYesNoChange(id, "yes", parentId)}
-              className="w-4 h-4 border-gray-300 focus:ring-gray-400 focus:border-gray-400 accent-gray-500"
+              className="w-4 h-4  focus:ring-gray-400  accent-gray-500"
             />
             <span className="ml-3 text-gray-700">
               {language === "mr" ? "होय" : "Yes"}
@@ -224,7 +224,7 @@ export default function ProjectWorkFollowup() {
               name={parentId ? `${parentId}-${id}` : id}
               checked={currentFieldData?.answer === false}
               onChange={() => handleYesNoChange(id, "no", parentId)}
-              className="w-4 h-4 border-gray-300 focus:ring-gray-400 focus:border-gray-400 accent-gray-500"
+              className="w-4 h-4  accent-gray-500"
             />
             <span className="ml-3 text-gray-700">
               {language === "mr" ? "नाही" : "No"}
@@ -233,7 +233,7 @@ export default function ProjectWorkFollowup() {
         </div>
 
         {(isYesSelected || currentFieldData?.answer === false) && (
-          <div className="space-y-4 bg-gray-50 p-4 rounded-lg mt-4">
+          <div className="space-y-4 bg-blue-50 p-4 rounded-lg mt-4">
             {isYesSelected && field.hasChannelSize && (
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -410,20 +410,21 @@ export default function ProjectWorkFollowup() {
   const currentField = formConfig.fields[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-100">
-      <div className="w-full max-w-2xl bg-[#e3f2fd] p-6 rounded-xl shadow-md">
-        <div className="bg-white flex justify-between items-center mb-4 px-4 py-3 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <img src={logo} alt="YNK Logo" className="h-10 w-10" />
-            <h1 className="text-xl font-bold">YNK</h1>
-          </div>
-          <button
-            onClick={handleLanguageToggle}
-            className="text-sm text-grey-600 underline hover:text-blue-800"
-          >
-            {language === "mr" ? "English" : "मराठी"}
-          </button>
-        </div>
+     <div className="min-h-screen flex items-center justify-center p-4">
+       <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
+         {/* Header */}
+             <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
+                   <div className="flex items-center space-x-3">
+                     <img src={logo} alt="YNK Logo" className="h-10 w-10" />
+                     <h1 className="text-xl font-bold">YNK</h1>
+                   </div>
+                   <button
+                     onClick={handleLanguageToggle}
+                     className="text-sm text-gray-600 underline hover:text-blue-600"
+                   >
+                     {language === 'mr' ? 'English' : 'मराठी'}
+                   </button>
+                 </div>
 
         <h2 className="text-center text-lg font-semibold mb-6 text-gray-800">
           {formConfig[`title_${language}`]}
