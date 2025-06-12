@@ -4,6 +4,8 @@ import { useSubmitFormMutation } from "../../store/formApi";
 import MaterialCheckListQuestion from "./MaterialCheckListQuestion";
 import { useUser } from '../context/UserContext';
 import useCurrentTime from '../hook/useCurrentTime';
+import logo from "../../assets/logo.png"; // Import your logo image
+
 
 function MaterialChecklist({ language, toggleLanguage }) {
   const navigate = useNavigate();
@@ -163,17 +165,25 @@ function MaterialChecklist({ language, toggleLanguage }) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-5xl bg-[#dbeeff] p-6 rounded-xl border border-blue-200">
-        <div className="bg-white flex justify-between items-center mb-4 px-6 py-4">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-gray-800">YNK</h1>
+     
+
+
+<div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
+          <div className="flex items-center space-x-3">
+            <img src={logo} alt="YNK Logo" className="h-10 w-10" />
+            <h1 className="text-xl font-bold">YNK</h1>
           </div>
           <button
-            onClick={toggleLanguage}
-            className="text-gray-600 underline hover:text-blue-600 text-sm"
+             onClick={toggleLanguage}
+            className="text-sm text-gray-600 underline hover:text-blue-600" disabled={isLoading}
           >
-            {language === "en" ? "मराठी" : "English"}
+            {language === 'mr' ? 'English' : 'मराठी'}
           </button>
         </div>
+
+
+
+
         <div className="px-6 py-6">
           <h2 className="text-xl font-bold text-left text-gray-700 mb-1">
             {config[language].title}

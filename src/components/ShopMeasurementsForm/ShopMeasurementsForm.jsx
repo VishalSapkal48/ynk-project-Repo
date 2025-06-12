@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSubmitFormMutation } from '../../store/formApi';
 import formConfig from './ShopMeasurementsFormQuestion';
+import logo from '../../assets/logo.png'; // Adjust the path as necessary
 
 export default function ShopMeasurementsForm() {
   const navigate = useNavigate();
@@ -189,18 +190,34 @@ export default function ShopMeasurementsForm() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
-        <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
+        
+
+
+<div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
           <div className="flex items-center space-x-3">
+            <img src={logo} alt="YNK Logo" className="h-10 w-10" />
             <h1 className="text-xl font-bold">YNK</h1>
           </div>
           <button
             onClick={handleLanguageToggle}
-            className="text-sm text-gray-600 underline"
-            disabled={isLoading}
+            className="text-sm text-gray-600 underline hover:text-blue-600" disabled={isLoading}
           >
             {language === 'mr' ? 'English' : 'मराठी'}
           </button>
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         <h2 className="text-lg text-center font-bold mb-4">
           {formConfig[`title_${language}`]}

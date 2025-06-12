@@ -2,35 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSubmitFormMutation } from "../../store/formApi";
 import ProjectWorkFollowupQuestion from "./ProjectWorkFollowupQuestion";
+import logo from "../../assets/logo.png"; // Adjust the path as necessary
+const { formConfig ,validationMessages} = ProjectWorkFollowupQuestion;
 
-const { formConfig } = ProjectWorkFollowupQuestion;
 
-const validationMessages = {
-  en: {
-    answerRequired: "Please provide an answer to the question.",
-    followupRequired: "Please provide a value for the follow-up question.",
-    imageRequired: "Please upload at least one image or video.",
-    checkboxRequired: "Please select at least one option.",
-    inputRequired: "Please specify details for 'Other'.",
-    submitError: "Failed to submit the form. Please try again.",
-    submitSuccess: "Form submitted successfully!",
-    invalidDateFormat: "Please enter a valid date (YYYY-MM-DD)",
-    invalidDate: "Please enter a valid date",
-    pastDate: "Date cannot be in the past",
-  },
-  mr: {
-    answerRequired: "कृपया प्रश्नाचे उत्तर द्या.",
-    followupRequired: "कृपया फॉलो-अप प्रश्नासाठी मूल्य प्रदान करा.",
-    imageRequired: "कृपया किमान एक प्रतिमा किंवा व्हिडिओ अपलोड करा.",
-    checkboxRequired: "कृपया किमान एक पर्याय निवडा.",
-    inputRequired: "कृपया 'इतर' साठी तपशील निर्दिष्ट करा.",
-    submitError: "फॉर्म सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
-    submitSuccess: "फॉर्म यशस्वीपणे सबमिट झाला!",
-    invalidDateFormat: "कृपया वैध तारीख प्रविष्ट करा (YYYY-MM-DD)",
-    invalidDate: "कृपया वैध तारीख प्रविष्ट करा",
-    pastDate: "तारीख भूतकाळातील असू शकत नाही",
-  },
-};
 
 export default function ProjectWorkFollowup() {
   const navigate = useNavigate();
@@ -431,44 +406,76 @@ export default function ProjectWorkFollowup() {
                 </div>
               </div>
             )}
+{isYesSelected && field.type === "yesno_with_media" && (
+  <div className="mb-4">
+    <label className="block text-sm font-medium mb-2 text-gray-700">
+      {language === "mr" ? "फोटो किंवा व्हिडिओ" : "Photo or Video"}
+    </label>
+    <div className="flex justify-between items-center gap-4">
+      {field.image && (
+        <img
+          src={field.image}
+          alt="Question related visual"
+          className="w-36 h-auto rounded"
+        />
+      )}
+      <input
+        type="file"
+        accept="image/*,video/*"
+        className="w-full text-gray-600 border border-gray-300 rounded px-3 py-2 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:bg-blue-100 file:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        style={{
+          fontSize: "16px",
+          color: "#333",
+          backgroundColor: "#fff",
+        }}
+        onChange={(e) =>
+          handleInputChange(id, "media", e.target.files[0], parentId)
+        }
+        disabled={isLoading}
+        aria-label={language === "mr" ? "फोटो किंवा व्हिडिओ" : "Photo or Video"}
+      />
+    </div>
+  </div>
+)}
 
-            {isYesSelected && field.type === "yesno_with_media" && (
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700">
-                  {language === "mr" ? "फोटो किंवा व्हिडिओ" : "Photo or Video"}
-                </label>
-                <input
-                  type="file"
-                  accept="image/*,video/*"
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-                  onChange={(e) =>
-                    handleInputChange(id, "media", e.target.files[0], parentId)
-                  }
-                  disabled={isLoading}
-                />
-              </div>
-            )}
+{(isYesSelected || currentFieldData?.answer === false) && field.hasReason && (
+  <div className="mb-4">
+    <label className="block text-sm font-medium mb-2 text-gray-700">
+      {language === "mr" ? "कारण" : "Reason"}
+    </label>
+    <textarea
+      className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+      rows="3"
+      placeholder={language === "mr" ? "कारण लिहा..." : "Write reason..."}
+      value={currentFieldData?.reason || ""}
+      onChange={(e) =>
+        handleInputChange(id, "reason", e.target.value, parentId)
+      }
+      disabled={isLoading}
+    />
+  </div>
+)}
 
-            {(isYesSelected || currentFieldData?.answer === false) &&
-              field.hasReason && (
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700">
-                    {language === "mr" ? "कारण" : "Reason"}
-                  </label>
-                  <textarea
-                    className="w-full p-3 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
-                    rows="3"
-                    placeholder={
-                      language === "mr" ? "कारण लिहा..." : "Write reason..."
-                    }
-                    value={currentFieldData?.reason || ""}
-                    onChange={(e) =>
-                      handleInputChange(id, "reason", e.target.value, parentId)
-                    }
-                    disabled={isLoading}
-                  />
-                </div>
-              )}
+{formData[id] === "other" && (
+  <div className="ml-6 mb-4">
+    <label className="block text-sm font-medium mb-2 text-gray-700">
+      {language === "mr" ? "तपशील" : "Other Details"}
+    </label>
+    <input
+      type="text"
+      value={formData[`${id}_other`] || ""}
+      onChange={(e) =>
+        setFormData((prev) => ({
+          ...prev,
+          [`${id}_other`]: e.target.value,
+        }))
+      }
+      placeholder={language === "mr" ? "तपशील लिहा" : "Please specify"}
+      className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+)}
+
 
             {isYesSelected && field.subQuestions && (
               <div className="ml-4 border-l-2 border-gray-200 pl-4 mt-4">
@@ -490,19 +497,20 @@ export default function ProjectWorkFollowup() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
-        <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
-          <div className="flex items-center space-x-3">
-            <h1 className="text-xl font-bold">YNK</h1>
-          </div>
-          <button
-            onClick={handleLanguageToggle}
-            className="text-sm text-gray-600 underline hover:text-blue-600"
-            disabled={isLoading}
-          >
-            {language === 'mr' ? 'English' : 'मराठी'}
-          </button>
-        </div>
-
+          <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
+                  <div className="flex items-center space-x-3">
+                    <img src={logo} alt="YNK Logo" className="h-10 w-10" />
+                    <h1 className="text-xl font-bold">YNK</h1>
+                  </div>
+                  <button
+                     onClick={handleLanguageToggle}
+                    className="text-sm text-gray-600 underline hover:text-blue-600" disabled={isLoading}
+                  >
+                    {language === 'mr' ? 'English' : 'मराठी'}
+                  </button>
+                </div>
+        
+       
         <h2 className="text-center text-lg font-semibold mb-6 text-gray-800">
           {formConfig[`title_${language}`]}
         </h2>
@@ -512,7 +520,7 @@ export default function ProjectWorkFollowup() {
         <div className="flex justify-between items-center">
           <button
             onClick={handleBack}
-            className="text-blue-600 underline disabled:opacity-50 disabled:cursor-not-allowed"
+           className="text-gray-500 underline disabled:text-gray-300 hover:text-blue-600"
             disabled={currentQuestionIndex === 0 || isLoading}
           >
             {language === "mr" ? "मागे" : "Back"}
