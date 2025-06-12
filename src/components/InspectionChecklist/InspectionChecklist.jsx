@@ -4,7 +4,7 @@ import { useSubmitFormMutation } from "../../store/formApi";
 import InspectionChecklistQuestion from "./InspectionChecklistQuestion";
 import { useUser } from "../context/UserContext";
 import useCurrentTime from "../hook/useCurrentTime";
-
+import logo from "../../assets/logo.png"; // Adjust the path as necessary
 const { firstImageData, secondImageData, thirdImageData, config } =
   InspectionChecklistQuestion;
 
@@ -273,7 +273,7 @@ function InspectionChecklist({ language, toggleLanguage }) {
       <div className="flex justify-between px-4 text">
         <button
           onClick={handleBack}
-          className={`underline text-grey-600 hover:text-blue-800 ${
+          className={`underline text-gray-600 hover:text-blue-800 ${
             currentTable === "first" ? "opacity-50 cursor-not-allowed" : ""
           }`}
           disabled={currentTable === "first" || isLoading}
@@ -367,18 +367,18 @@ function InspectionChecklist({ language, toggleLanguage }) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-4xl bg-[#e3f2fd] p-6 rounded-xl border-blue-200">
-        <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
+     <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
           <div className="flex items-center space-x-3">
+            <img src={logo} alt="YNK Logo" className="h-10 w-10" />
             <h1 className="text-xl font-bold">YNK</h1>
           </div>
           <button
-            onClick={toggleLanguage}
-            className="text-sm text-grey-600 underline hover:text-blue-800"
+             onClick={toggleLanguage}
+            className="text-sm text-gray-600 underline hover:text-blue-600" disabled={isLoading}
           >
-            {language === "mr" ? "English" : "मराठी"}
+            {language === 'mr' ? 'English' : 'मराठी'}
           </button>
         </div>
-
         <div className="px-6 py-6">
           <h2 className="text-xl font-bold text-left text-gray-700 mb-1">
             {currentTable === "first"
