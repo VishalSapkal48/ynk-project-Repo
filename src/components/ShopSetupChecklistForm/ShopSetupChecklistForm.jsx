@@ -4,7 +4,7 @@ import { useSubmitFormMutation } from "../../store/formApi";
 import { useUser } from "../context/UserContext";
 import ShopSetupChecklistFormQuestion from "./ShopSetupChecklistFormQuestion";
 import useCurrentTime from "../hook/useCurrentTime";
-
+import logo from "../../assets/logo.png"; // Assuming you have a logo image in this path
 const { formConfig, validationMessages } = ShopSetupChecklistFormQuestion;
 
 export default function ShopSetupChecklistForm() {
@@ -427,36 +427,33 @@ export default function ShopSetupChecklistForm() {
               disabled={isLoading}
               aria-label={question}
             />
-            {errors[id] && (
-              <p className="text-red-500 text-sm mt-1">{errors[id]}</p>
-            )}
+           
           </div>
         )}
-
-        {field.type === "file" && (
-          <div>
-            <input
-              type="file"
-              name={id}
-              onChange={(e) => handleFileChange(id, e)}
-              className={`w-full text-gray-600 ${
-                errors[id] ? "border-red-500" : ""
-              }`}
-              accept={id.includes("video") ? "video/*" : "image/*"}
-              disabled={isLoading}
-              aria-label={`फाइल अपलोड करा ${question}`}
-            />
-            {formData[id] && (
-              <p className="mt-2 text-gray-600 text-left">
-                {language === "mr" ? "फाइल निवडली: " : "File selected: "}{" "}
-                {formData[id].name}
-              </p>
-            )}
-            {errors[id] && (
-              <p className="text-red-500 text-sm mt-1">{errors[id]}</p>
-            )}
-          </div>
-        )}
+{field.type === "file" && (
+        <div className="mb-4">
+         
+          <input
+            type="file"
+            id={id}
+            name={id}
+            onChange={(e) => handleFileChange(id, e)}
+            className={`w-full text-gray-600 border rounded px-3 py-2 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:bg-blue-100 file:text-blue-700 ${
+              errors[id] ? "border-red-500" : "border-blue-200"
+            }`}
+            accept={id.includes("video") ? "video/*" : "image/*"}
+            disabled={isLoading}
+            aria-label={`Upload file for ${question}`}
+          />
+          {formData[id] && (
+            <p className="mt-2 text-gray-600 text-sm">
+              {language === "mr" ? "फाइल निवडली: " : "File selected: "}
+              {formData[id].name}
+            </p>
+          )}
+         
+        </div>
+      )}
         {formData[id] !== undefined &&
           field.followup &&
           field.type === "yesno" && (
@@ -524,18 +521,36 @@ export default function ShopSetupChecklistForm() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
-        <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
+ 
+  <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
           <div className="flex items-center space-x-3">
+            <img src={logo} alt="YNK Logo" className="h-10 w-10" />
             <h1 className="text-xl font-bold">YNK</h1>
           </div>
           <button
-            onClick={toggleLanguage}
-            className="text-sm text-gray-600 underline disabled:opacity-50"
-            disabled={isLoading}
+             onClick={toggleLanguage}
+            className="text-sm text-gray-600 underline hover:text-blue-600" disabled={isLoading}
           >
-            {language === "mr" ? "English" : "मराठी"}
+            {language === 'mr' ? 'English' : 'मराठी'}
           </button>
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <h2 className="text-lg text-center font-bold mb-2">
           {formConfig[`title_${language}`] || formConfig.title_mr || formConfig.title_en || "दुकान सेटअप चेकलिस्ट"}
         </h2>

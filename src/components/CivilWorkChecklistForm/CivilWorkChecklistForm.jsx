@@ -3,7 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSubmitFormMutation } from "../../store/formApi";
 import CivilWorkChecklistFormQuestion from "./CivilWorkChecklistFormQuestion";
-
+import logo from "../../assets/logo.png";
 const {
   equipmentConfig,
   questions,
@@ -19,13 +19,12 @@ const {
   tableData10,
   config,
 } = CivilWorkChecklistFormQuestion;
-
 export default function CivilWorkChecklistForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    cctv1: null,
-    internet2: null,
-    speaker3: null,
+    cctv_understood: null,
+    internet_understood: null,
+    speaker_understood: null,
     painting_understood: null,
     plumber_understood: null,
     electrician_switch_socket_understood: null,
@@ -37,6 +36,7 @@ export default function CivilWorkChecklistForm() {
   const [language, setLanguage] = useState("mr");
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   const [submitForm, { isLoading, error }] = useSubmitFormMutation();
 
   const handleLanguageToggle = () => {
@@ -48,52 +48,88 @@ export default function CivilWorkChecklistForm() {
       ...prev,
       [stepKey]: value,
     }));
+    setErrors((prev) => ({
+      ...prev,
+      [stepKey]: null,
+    }));
+  };
+
+  const validateCurrentStep = () => {
+    const stepKey = questions[step - 1].key;
+    const newErrors = {};
+
+    if (formData[stepKey] === null) {
+      newErrors[stepKey] =
+        language === "mr"
+          ? "कृपया प्रश्नाचे उत्तर द्या!"
+          : "Please answer the question!";
+    }
+
+    return newErrors;
+  };
+
+  const validateAllQuestions = () => {
+    const newErrors = {};
+    questions.forEach((q) => {
+      if (formData[q.key] === null) {
+        newErrors[q.key] =
+          language === "mr"
+            ? `प्रश्न "${q[`question_${language}`]}" चे उत्तर द्या!`
+            : `Please answer the question "${q[`question_${language}`]}"!`;
+      }
+    });
+    return newErrors;
   };
 
   const handleNext = () => {
-    const stepKey = questions[step - 1].key;
-    if (formData[stepKey] === null) {
-      alert(
-        language === "mr"
-          ? "कृपया प्रश्नाचे उत्तर द्या!"
-          : "Please answer the question!"
-      );
+    const validationErrors = validateCurrentStep();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      alert(validationErrors[questions[step - 1].key]);
       return;
     }
+
     if (step < questions.length) {
       setStep((prev) => prev + 1);
+      setErrors({});
     }
   };
 
   const handleBack = () => {
     if (step > 1) {
       setStep((prev) => prev - 1);
+      setErrors({});
     }
-  };
 
+
+    
+  };
   const handleSubmit = async () => {
-    const unanswered = questions.find((q) => formData[q.key] === null);
-    if (unanswered) {
+    const validationErrors = validateAllQuestions();
+    if (Object.keys(validationErrors).length > 0) {
+      const errorMessages = Object.values(validationErrors).join("\n");
       alert(
         language === "mr"
-          ? "कृपया सर्व प्रश्नांची उत्तरे द्या!"
-          : "Please answer all questions!"
+          ? `कृपया खालील प्रश्नांची उत्तरे द्या:\n${errorMessages}`
+          : `Please answer the following questions:\n${errorMessages}`
       );
-      setStep(questions.findIndex((q) => q.key === unanswered.key) + 1);
+      const firstUnanswered = questions.find((q) => formData[q.key] === null);
+      if (firstUnanswered) {
+        setStep(questions.findIndex((q) => q.key === firstUnanswered.key) + 1);
+      }
       return;
     }
 
     setIsSubmitting(true);
 
     const formattedData = new FormData();
-    formattedData.append('formId', 'civil_work_checklist');
-    formattedData.append('language', language);
+    formattedData.append("formId", "civil_work_checklist");
+    formattedData.append("language", language);
     // Hardcoded user data - replace with dynamic data later
-    formattedData.append('name', 'Test User');
-    formattedData.append('mobile', '1234567890');
-    formattedData.append('branch', 'Test Branch');
+    formattedData.append("name", "Test User");
+    formattedData.append("mobile", "1234567890");
+    formattedData.append("branch", "Test Branch");
 
-    // Format responses dynamically
     questions.forEach((q) => {
       const question = q[`question_${language}`];
       const answer =
@@ -118,12 +154,12 @@ export default function CivilWorkChecklistForm() {
           ? "फॉर्म यशस्वीरित्या सबमिट झाला!"
           : "Form submitted successfully!"
       );
-      navigate('/material-checklist');
+      navigate("/material-checklist");
     } catch (err) {
       alert(
         language === "mr"
-          ? `फॉर्म सबमिट करण्यात त्रुटी: ${err?.data?.message || 'Unknown error'}`
-          : `Error submitting form: ${err?.data?.message || 'Unknown error'}`
+          ? `फॉर्म सबमिट करण्यात त्रुटी: ${err?.data?.message || "Unknown error"}`
+          : `Error submitting form: ${err?.data?.message || "Unknown error"}`
       );
     } finally {
       setIsSubmitting(false);
@@ -262,20 +298,27 @@ export default function CivilWorkChecklistForm() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-100">
       <div className="w-full max-w-2xl bg-[#e3f2fd] p-6 rounded-xl shadow-md">
-        <div className="bg-white flex justify-between items-center mb-4 px-4 py-3 rounded-lg">
+
+
+<div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
           <div className="flex items-center space-x-3">
+            <img src={logo} alt="YNK Logo" className="h-10 w-10" />
             <h1 className="text-xl font-bold">YNK</h1>
           </div>
           <button
-            onClick={handleLanguageToggle}
-            className="text-sm text-gray-600 underline hover:text-blue-600"
-            aria-label={
-              language === "mr" ? "Switch to English" : "Switch to Marathi"
-            }
+              onClick={handleLanguageToggle}
+            className="text-sm text-gray-600 underline hover:text-blue-600" disabled={isLoading}
           >
-            {language === "mr" ? "English" : "मराठी"}
+            {language === 'mr' ? 'English' : 'मराठी'}
           </button>
         </div>
+
+
+
+
+
+
+
         <h2 className="text-center text-lg font-semibold mb-6">
           {equipmentConfig[`title_${language}`]}
         </h2>

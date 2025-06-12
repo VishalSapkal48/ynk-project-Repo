@@ -2,8 +2,12 @@ import { useState } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSubmitFormMutation } from "../../store/formApi";
-import formConfig from "./InternalDeprmentWorkingQuestion";
-
+import InternalDeprmentWorkingQuestion from "./InternalDeprmentWorkingQuestion";
+import logo from "../../assets/logo.png"; 
+const {
+  formConfig,
+  validationMessages,
+} =InternalDeprmentWorkingQuestion ;
 export default function InternalDepartmentWorking() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
@@ -14,33 +18,7 @@ export default function InternalDepartmentWorking() {
 
   const totalQuestions = formConfig.fields.length;
 
-  const validationMessages = {
-    en: {
-      answerRequired: "Please provide an answer to the question.",
-      followupRequired: "Please provide a value for the follow-up question.",
-      imageRequired: "Please upload at least one image or video.",
-      checkboxRequired: "Please select at least one option.",
-      inputRequired: 'Please specify details for "Other".',
-      submitError: "Failed to submit the form. Please try again.",
-      submitSuccess: "Form submitted successfully!",
-      invalidDateFormat: "Please enter a valid date (YYYY-MM-DD)",
-      invalidDate: "Please enter a valid date",
-      pastDate: "Date cannot be in the past",
-    },
-    mr: {
-      answerRequired: "कृपया प्रश्नाचे उत्तर द्या.",
-      followupRequired: "कृपया फॉलो-अप प्रश्नासाठी मूल्य प्रदान करा.",
-      imageRequired: "कृपया किमान एक प्रतिमा किंवा व्हिडिओ अपलोड करा.",
-      checkboxRequired: "कृपया किमान एक पर्याय निवडा.",
-      inputRequired: 'कृपया "इतर" साठी तपशील निर्दिष्ट करा.',
-      submitError: "फॉर्म सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
-      submitSuccess: "फॉर्म यशस्वीपणे सबमिट झाला!",
-      invalidDateFormat: "कृपया वैध तारीख प्रविष्ट करा (YYYY-MM-DD)",
-      invalidDate: "कृपया वैध तारीख प्रविष्ट करा",
-      pastDate: "तारीख भूतकाळातील असू शकत नाही",
-    },
-  };
-
+ 
   const validateCurrentField = (field) => {
     const newErrors = {};
     const id = field.id;
@@ -200,29 +178,26 @@ export default function InternalDepartmentWorking() {
               </span>
             </label>
 
-            {formData[id] === "other" && (
-              <div className="ml-6">
-                <input
-                  type="text"
-                  value={formData[`${id}_other`] || ""}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      [`${id}_other`]: e.target.value,
-                    }))
-                  }
-                  placeholder={
-                    language === "mr" ? "तपशील लिहा" : "Please specify"
-                  }
-                  className="w-full border-none rounded px-3 py-2 text-sm"
-                />
-              </div>
-            )}
+          {formData[id] === "other" && (
+  <div className="ml-6">
+    <input
+      type="text"
+      value={formData[`${id}_other`] || ""}
+      onChange={(e) =>
+        setFormData((prev) => ({
+          ...prev,
+          [`${id}_other`]: e.target.value,
+        }))
+      }
+      placeholder={language === "mr" ? "तपशील लिहा" : "Please specify"}
+      className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+)}
+
           </div>
         </div>
-        {errors[id] && (
-          <p className="text-red-500 text-sm mt-1">{errors[id]}</p>
-        )}
+       
       </div>
     );
   };
@@ -232,17 +207,25 @@ export default function InternalDepartmentWorking() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
-        <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
-          <div className="flex items-center space-x-3">
-            <h1 className="text-xl font-bold">YNK</h1>
-          </div>
-          <button
-            onClick={handleLanguageToggle}
-            className="text-sm text-gray-600 underline hover:text-blue-600"
-          >
-            {language === "mr" ? "English" : "मराठी"}
-          </button>
-        </div>
+     
+   <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
+           <div className="flex items-center space-x-3">
+             <img src={logo} alt="YNK Logo" className="h-10 w-10" />
+             <h1 className="text-xl font-bold">YNK</h1>
+           </div>
+           <button
+              onClick={handleLanguageToggle}
+             className="text-sm text-gray-600 underline hover:text-blue-600" disabled={isLoading}
+           >
+             {language === 'mr' ? 'English' : 'मराठी'}
+           </button>
+         </div>
+ 
+
+ 
+ 
+
+
 
         <h2 className="text-lg text-center font-bold mb-4">
           {formConfig[`title_${language}`]}
