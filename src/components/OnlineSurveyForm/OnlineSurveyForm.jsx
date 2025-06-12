@@ -1,7 +1,7 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSubmitFormMutation } from "../../store/formApi";
 import OnlineServeyQuestion from './OnlineServeyQuestion.jsx';
-import logo from "../../assets/logo.png";
-import axios from "axios";
 
 const { formConfig, validationMessages } = OnlineServeyQuestion;
 
@@ -117,6 +117,7 @@ const CheckboxComponent = ({ lang, comp, qId, compIdx, followupValues, setFollow
     </div>
   );
 };
+
 // Render Field Function
 const renderField = ({ lang, field, formData, handleYesNoChange, followupValues, setFollowupValues, handleImageUpload }) => {
   const question = field[`question_${lang}`] || field.question_mr;
@@ -172,7 +173,7 @@ const renderField = ({ lang, field, formData, handleYesNoChange, followupValues,
   return null;
 };
 
-// Move renderFollowup outside of QuestionRenderer to make it reusable
+// Render Followup Function
 const renderFollowup = (selectedAnswer, followup, lang, qId, followupValues, setFollowupValues, handleImageUpload) => {
   const followupConfig = followup?.[selectedAnswer ? "yes" : "no"];
   if (!followupConfig) return null;
@@ -300,7 +301,7 @@ const renderFollowup = (selectedAnswer, followup, lang, qId, followupValues, set
   return null;
 };
 
-// Update QuestionRenderer to use the external renderFollowup
+// Question Renderer Component
 const QuestionRenderer = ({
   lang,
   question,
@@ -406,14 +407,16 @@ const QuestionRenderer = ({
   if (question.type === "multi") return renderMulti();
   return null;
 };
+
 // Main Form Component
 const OnlineServeForm = () => {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lang, setLang] = useState("mr"); // Default to Marathi
+  const [lang, setLang] = useState("mr");
   const [answers, setAnswers] = useState({});
-  const [followupValues, setFollowupValues] = useState({}); // { qId: { compIdx: value } }
-  const [uploadedFiles, setUploadedFiles] = useState({}); // { qId: { compIdx: [files] } }
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [followupValues, setFollowupValues] = useState({});
+  const [uploadedFiles, setUploadedFiles] = useState({});
+  const [submitForm, { isLoading, error }] = useSubmitFormMutation();
 
   const questions = formConfig.fields;
   const currentQ = questions[currentIndex];
@@ -421,14 +424,14 @@ const OnlineServeForm = () => {
 
   const handleAnswer = (value) => {
     setAnswers({ ...answers, [currentQ.id]: value });
-    setFollowupValues({ ...followupValues, [currentQ.id]: {} }); // Reset follow-up values
-    setUploadedFiles({ ...uploadedFiles, [currentQ.id]: {} }); // Reset uploaded files
+    setFollowupValues({ ...followupValues, [currentQ.id]: {} });
+    setUploadedFiles({ ...uploadedFiles, [currentQ.id]: {} });
   };
 
   const handleYesNoChange = (id, value) => {
     setAnswers({ ...answers, [id]: value === "yes" });
-    setFollowupValues({ ...followupValues, [id]: {} }); // Reset follow-up values
-    setUploadedFiles({ ...uploadedFiles, [id]: {} }); // Reset uploaded files
+    setFollowupValues({ ...followupValues, [id]: {} });
+    setUploadedFiles({ ...uploadedFiles, [id]: {} });
   };
 
   const handleImageUpload = (files, qId, compIdx) => {
@@ -442,127 +445,126 @@ const OnlineServeForm = () => {
     }));
   };
 
- const validateQuestion = (index) => {
-  const question = questions[index];
-  const answer = answers[question.id];
-  const followupValue = followupValues[question.id] || {};
-  const files = uploadedFiles[question.id] || {};
+  const validateQuestion = (index) => {
+    const question = questions[index];
+    const answer = answers[question.id];
+    const followupValue = followupValues[question.id] || {};
+    const files = uploadedFiles[question.id] || {};
 
-  // Validate main question
-  if (question.type === "yesno" || question.type === "radio") {
-    if (answer === undefined) {
+    if (question.type === "yesno" || question.type === "radio") {
+      if (answer === undefined) {
+        alert(validationMessages[lang].answerRequired);
+        return false;
+      }
+    }
+
+    if (question.type === "input" && !followupValue[0]?.trim()) {
       alert(validationMessages[lang].answerRequired);
       return false;
     }
-  }
 
-  if (question.type === "input" && !followupValue[0]?.trim()) {
-    alert(validationMessages[lang].answerRequired);
-    return false;
-  }
+    if (question.type === "multi") {
+      for (let i = 0; i < question.components.length; i++) {
+        if (
+          question.components[i].type === "imageupload" &&
+          (!files[i] || files[i].length === 0)
+        ) {
+          alert(validationMessages[lang].imageRequired);
+          return false;
+        }
+      }
+    }
 
-  if (question.type === "multi") {
-    for (let i = 0; i < question.components.length; i++) {
+    if (answer !== undefined && question.followup) {
+      const followup = question.followup[answer ? "yes" : "no"];
+      if (!followup) return true;
+
+      if (followup.type === "radio" && !followupValue[0]) {
+        alert(validationMessages[lang].followupRequired);
+        return false;
+      }
+
+      if (followup.type === "input" && !followupValue[0]?.trim()) {
+        alert(validationMessages[lang].followupRequired);
+        return false;
+      }
+
       if (
-        question.components[i].type === "imageupload" &&
-        (!files[i] || files[i].length === 0)
+        followup.type === "checkbox" &&
+        (!followupValue[0] || followupValue[0].length === 0)
+      ) {
+        alert(validationMessages[lang].checkboxRequired);
+        return false;
+      }
+
+      if (
+        followup.type === "imageupload" &&
+        (!files[0] || files[0].length === 0)
       ) {
         alert(validationMessages[lang].imageRequired);
         return false;
       }
-    }
-  }
 
-  // Validate follow-up questions
-  if (answer !== undefined && question.followup) {
-    const followup = question.followup[answer ? "yes" : "no"];
-    if (!followup) return true;
-
-    if (followup.type === "radio" && !followupValue[0]) {
-      alert(validationMessages[lang].followupRequired);
-      return false;
-    }
-
-    if (followup.type === "input" && !followupValue[0]?.trim()) {
-      alert(validationMessages[lang].followupRequired);
-      return false;
-    }
-
-    if (
-      followup.type === "checkbox" &&
-      (!followupValue[0] || followupValue[0].length === 0)
-    ) {
-      alert(validationMessages[lang].checkboxRequired);
-      return false;
-    }
-
-    if (
-      followup.type === "imageupload" &&
-      (!files[0] || files[0].length === 0)
-    ) {
-      alert(validationMessages[lang].imageRequired);
-      return false;
-    }
-
-    if (followup.type === "multi" && followup.components) {
-      for (let i = 0; i < followup.components.length; i++) {
-        const comp = followup.components[i];
-        if (comp.type === "radio" && !followupValue[i]) {
-          alert(validationMessages[lang].followupRequired);
-          return false;
+      if (followup.type === "multi" && followup.components) {
+        for (let i = 0; i < followup.components.length; i++) {
+          const comp = followup.components[i];
+          if (comp.type === "radio" && !followupValue[i]) {
+            alert(validationMessages[lang].followupRequired);
+            return false;
+          }
+          if (comp.type === "input" && !followupValue[i]?.trim()) {
+            alert(validationMessages[lang].inputRequired);
+            return false;
+          }
+          if (
+            comp.type === "checkbox" &&
+            (!followupValue[i] || followupValue[i].length === 0)
+          ) {
+            alert(validationMessages[lang].checkboxRequired);
+            return false;
+          }
+          if (
+            comp.type === "imageupload" &&
+            (!files[i] || files[i].length === 0)
+          ) {
+            alert(validationMessages[lang].imageRequired);
+            return false;
+          }
         }
-        if (comp.type === "input" && !followupValue[i]?.trim()) {
-          alert(validationMessages[lang].inputRequired);
-          return false;
-        }
-        if (
-          comp.type === "checkbox" &&
-          (!followupValue[i] || followupValue[i].length === 0)
-        ) {
-          alert(validationMessages[lang].checkboxRequired);
-          return false;
-        }
-        if (
-          comp.type === "imageupload" &&
-          (!files[i] || files[i].length === 0)
-        ) {
-          alert(validationMessages[lang].imageRequired);
-          return false;
+      }
+
+      if (followup.fields) {
+        for (let i = 0; i < followup.fields.length; i++) {
+          const comp = followup.fields[i];
+          if (comp.type === "radio" && !followupValue[i]) {
+            alert(validationMessages[lang].followupRequired);
+            return false;
+          }
+          if (comp.type === "input" && !followupValue[i]?.trim()) {
+            alert(validationMessages[lang].inputRequired);
+            return false;
+          }
+          if (
+            comp.type === "checkbox" &&
+            (!followupValue[i] || followupValue[i].length === 0)
+          ) {
+            alert(validationMessages[lang].checkboxRequired);
+            return false;
+          }
+          if (
+            comp.type === "imageupload" &&
+            (!files[i] || files[i].length === 0)
+          ) {
+            alert(validationMessages[lang].imageRequired);
+            return false;
+          }
         }
       }
     }
 
-    if (followup.fields) {
-      for (let i = 0; i < followup.fields.length; i++) {
-        const comp = followup.fields[i];
-        if (comp.type === "radio" && !followupValue[i]) {
-          alert(validationMessages[lang].followupRequired);
-          return false;
-        }
-        if (comp.type === "input" && !followupValue[i]?.trim()) {
-          alert(validationMessages[lang].inputRequired);
-          return false;
-        }
-        if (
-          comp.type === "checkbox" &&
-          (!followupValue[i] || followupValue[i].length === 0)
-        ) {
-          alert(validationMessages[lang].checkboxRequired);
-          return false;
-        }
-        if (
-          comp.type === "imageupload" &&
-          (!files[i] || files[i].length === 0)
-        ) {
-          alert(validationMessages[lang].imageRequired);
-          return false;
-        }
-      }
-    }
-  }
+    return true;
+  };
 
-  return true;
-};
   const handleNext = () => {
     if (!validateQuestion(currentIndex)) {
       return;
@@ -584,8 +586,67 @@ const OnlineServeForm = () => {
     }
 
     const formData = new FormData();
-    formData.append("answers", JSON.stringify(answers));
-    formData.append("followupValues", JSON.stringify(followupValues));
+    formData.append('formId', 'online_survey');
+    formData.append('language', lang);
+    // Hardcoded user data - replace with dynamic data later
+    formData.append('name', 'Test User');
+    formData.append('mobile', '1234567890');
+    formData.append('branch', 'Test Branch');
+
+    questions.forEach((question) => {
+      const questionText = lang === "mr" ? question.question_mr : question.question_en;
+      let answer = answers[question.id];
+      const followupValue = followupValues[question.id] || {};
+
+      if (question.type === "yesno") {
+        answer = answer === true ? (lang === "mr" ? "होय" : "Yes") : answer === false ? (lang === "mr" ? "नाही" : "No") : (lang === "mr" ? "उत्तर दिले नाही" : "Not answered");
+        formData.append(questionText, answer);
+
+        if (answer !== (lang === "mr" ? "उत्तर दिले नाही" : "Not answered") && question.followup) {
+          const followupConfig = question.followup[answers[question.id] ? "yes" : "no"];
+          if (followupConfig) {
+            if (followupConfig.type === "radio" || followupConfig.type === "input") {
+              formData.append(`${questionText} - Followup`, followupValue[0] || "Not answered");
+            } else if (followupConfig.type === "checkbox") {
+              formData.append(`${questionText} - Followup`, followupValue[0]?.join(", ") || "Not answered");
+            } else if (followupConfig.type === "multi" && followupConfig.components) {
+              followupConfig.components.forEach((comp, idx) => {
+                const followupQuestion = lang === "mr" ? comp.question_mr : comp.question_en;
+                if (comp.type === "radio" || comp.type === "input") {
+                  formData.append(`${questionText} - ${followupQuestion}`, followupValue[idx] || "Not answered");
+                } else if (comp.type === "checkbox") {
+                  formData.append(`${questionText} - ${followupQuestion}`, followupValue[idx]?.join(", ") || "Not answered");
+                }
+              });
+            }
+          }
+        }
+      } else if (question.type === "radio") {
+        formData.append(questionText, answer || (lang === "mr" ? "उत्तर दिले नाही" : "Not answered"));
+        if (answer && question.followup) {
+          const followupConfig = question.followup[answer];
+          if (followupConfig) {
+            if (followupConfig.type === "radio" || followupConfig.type === "input") {
+              formData.append(`${questionText} - Followup`, followupValue[0] || "Not answered");
+            } else if (followupConfig.type === "checkbox") {
+              formData.append(`${questionText} - Followup`, followupValue[0]?.join(", ") || "Not answered");
+            } else if (followupConfig.type === "multi" && followupConfig.components) {
+              followupConfig.components.forEach((comp, idx) => {
+                const followupQuestion = lang === "mr" ? comp.question_mr : comp.question_en;
+                if (comp.type === "radio" || comp.type === "input") {
+                  formData.append(`${questionText} - ${followupQuestion}`, followupValue[idx] || "Not answered");
+                } else if (comp.type === "checkbox") {
+                  formData.append(`${questionText} - ${followupQuestion}`, followupValue[idx]?.join(", ") || "Not answered");
+                }
+              });
+            }
+          }
+        }
+      } else if (question.type === "input") {
+        formData.append(questionText, followupValue[0] || (lang === "mr" ? "उत्तर दिले नाही" : "Not answered"));
+      }
+    });
+
     Object.keys(uploadedFiles).forEach((qId) => {
       Object.keys(uploadedFiles[qId]).forEach((compIdx) => {
         uploadedFiles[qId][compIdx].forEach((file, fileIdx) => {
@@ -594,29 +655,20 @@ const OnlineServeForm = () => {
       });
     });
 
-    setIsSubmitting(true);
-
     try {
-      const response = await axios.post("YOUR_API_ENDPOINT_HERE", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await submitForm(formData).unwrap();
       alert(lang === "mr" ? "फॉर्म यशस्वीरीत्या सबमिट केला!" : "Form submitted successfully!");
-      // Reset form after submission
       setAnswers({});
       setFollowupValues({});
       setUploadedFiles({});
       setCurrentIndex(0);
-    } catch (error) {
-      console.error("Submission error:", error);
+      navigate('/shop-measurements');
+    } catch (err) {
       alert(
         lang === "mr"
-          ? "फॉर्म सबमिट करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा."
-          : "Error submitting form. Please try again."
+          ? `फॉर्म सबमिट करताना त्रुटी आली: ${err?.data?.message || 'Unknown error'}`
+          : `Error submitting form: ${err?.data?.message || 'Unknown error'}`
       );
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -635,7 +687,6 @@ const OnlineServeForm = () => {
       <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
         <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
           <div className="flex items-center space-x-3">
-            <img src={logo} alt="YNK Logo" className="h-10 w-10" />
             <h1 className="text-xl font-bold">YNK</h1>
           </div>
           <button
@@ -667,7 +718,7 @@ const OnlineServeForm = () => {
           <button
             onClick={handleBack}
             className="text-gray-500 underline disabled:opacity-50 hover:text-blue-600"
-            disabled={currentIndex === 0 || isSubmitting}
+            disabled={currentIndex === 0 || isLoading}
             aria-label={lang === "mr" ? formConfig.navigation_buttons.back_mr : formConfig.navigation_buttons.back_en}
           >
             {lang === "mr" ? formConfig.navigation_buttons.back_mr : formConfig.navigation_buttons.back_en}
@@ -677,9 +728,9 @@ const OnlineServeForm = () => {
             <button
               onClick={handleNext}
               className={`px-4 py-2 rounded text-white transition-colors ${
-                isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
               }`}
-              disabled={isSubmitting}
+              disabled={isLoading}
               aria-label={lang === "mr" ? formConfig.navigation_buttons.next_mr : formConfig.navigation_buttons.next_en}
             >
               {lang === "mr" ? formConfig.navigation_buttons.next_mr : formConfig.navigation_buttons.next_en}
@@ -692,11 +743,11 @@ const OnlineServeForm = () => {
             <button
               onClick={handleSubmit}
               className={`px-6 py-2 rounded text-white transition-colors ${
-                isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+                isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
               }`}
-              disabled={isSubmitting}
+              disabled={isLoading}
               aria-label={
-                isSubmitting
+                isLoading
                   ? lang === "mr"
                     ? "सबमिट करत आहे..."
                     : "Submitting..."
@@ -705,7 +756,7 @@ const OnlineServeForm = () => {
                   : formConfig.submit_button_en
               }
             >
-              {isSubmitting
+              {isLoading
                 ? lang === "mr"
                   ? "सबमिट करत आहे..."
                   : "Submitting..."
@@ -714,6 +765,13 @@ const OnlineServeForm = () => {
                 : formConfig.submit_button_en}
             </button>
           </div>
+        )}
+        {error && (
+          <p className="text-red-500 text-sm mt-4 text-center">
+            {lang === "mr"
+              ? `त्रुटी: ${error?.data?.message || 'Unknown error'}`
+              : `Error: ${error?.data?.message || 'Unknown error'}`}
+          </p>
         )}
       </div>
     </div>

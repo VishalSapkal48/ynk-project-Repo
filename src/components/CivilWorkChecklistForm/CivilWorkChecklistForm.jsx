@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import axios from 'axios';
-import logo from '../../assets/logo.png'; // Ensure this path is correct
-import CivilWorkChecklistFormQuestion from './CivilWorkChecklistFormQuestion';
+import { useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useSubmitFormMutation } from "../../store/formApi";
+import CivilWorkChecklistFormQuestion from "./CivilWorkChecklistFormQuestion";
 
 const {
   equipmentConfig,
@@ -20,6 +21,7 @@ const {
 } = CivilWorkChecklistFormQuestion;
 
 export default function CivilWorkChecklistForm() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     cctv1: null,
     internet2: null,
@@ -32,12 +34,13 @@ export default function CivilWorkChecklistForm() {
     pop_tiles_understood: null,
     gas_piping_understood: null,
   });
-  const [language, setLanguage] = useState('mr');
+  const [language, setLanguage] = useState("mr");
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitForm, { isLoading, error }] = useSubmitFormMutation();
 
   const handleLanguageToggle = () => {
-    setLanguage((prev) => (prev === 'mr' ? 'en' : 'mr'));
+    setLanguage((prev) => (prev === "mr" ? "en" : "mr"));
   };
 
   const handleYesNoChange = (stepKey, value) => {
@@ -51,9 +54,9 @@ export default function CivilWorkChecklistForm() {
     const stepKey = questions[step - 1].key;
     if (formData[stepKey] === null) {
       alert(
-        language === 'mr'
-          ? 'कृपया प्रश्नाचे उत्तर द्या!'
-          : 'Please answer the question!'
+        language === "mr"
+          ? "कृपया प्रश्नाचे उत्तर द्या!"
+          : "Please answer the question!"
       );
       return;
     }
@@ -72,9 +75,9 @@ export default function CivilWorkChecklistForm() {
     const unanswered = questions.find((q) => formData[q.key] === null);
     if (unanswered) {
       alert(
-        language === 'mr'
-          ? 'कृपया सर्व प्रश्नांची उत्तरे द्या!'
-          : 'Please answer all questions!'
+        language === "mr"
+          ? "कृपया सर्व प्रश्नांची उत्तरे द्या!"
+          : "Please answer all questions!"
       );
       setStep(questions.findIndex((q) => q.key === unanswered.key) + 1);
       return;
@@ -82,51 +85,45 @@ export default function CivilWorkChecklistForm() {
 
     setIsSubmitting(true);
 
-    const formattedData = questions.reduce((acc, q) => {
+    const formattedData = new FormData();
+    formattedData.append('formId', 'civil_work_checklist');
+    formattedData.append('language', language);
+    // Hardcoded user data - replace with dynamic data later
+    formattedData.append('name', 'Test User');
+    formattedData.append('mobile', '1234567890');
+    formattedData.append('branch', 'Test Branch');
+
+    // Format responses dynamically
+    questions.forEach((q) => {
       const question = q[`question_${language}`];
       const answer =
         formData[q.key] === true
-          ? language === 'mr'
-            ? 'होय'
-            : 'Yes'
+          ? language === "mr"
+            ? "होय"
+            : "Yes"
           : formData[q.key] === false
-          ? language === 'mr'
-            ? 'नाही'
-            : 'No'
-          : language === 'mr'
-          ? 'उत्तर दिले नाही'
-          : 'Not answered';
-      return {
-        ...acc,
-        [question]: answer,
-      };
-    }, {});
-
-    console.log('Submitted Data:', formattedData);
+          ? language === "mr"
+            ? "नाही"
+            : "No"
+          : language === "mr"
+          ? "उत्तर दिले नाही"
+          : "Not answered";
+      formattedData.append(question, answer);
+    });
 
     try {
-      const response = await axios.post(
-        'YOUR_API_ENDPOINT', // Replace with actual endpoint
-        { ...formData, language },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      console.log('API Response:', response.data);
+      await submitForm(formattedData).unwrap();
       alert(
-        language === 'mr'
-          ? 'फॉर्म यशस्वीरित्या सबमिट झाला!'
-          : 'Form submitted successfully!'
+        language === "mr"
+          ? "फॉर्म यशस्वीरित्या सबमिट झाला!"
+          : "Form submitted successfully!"
       );
-    } catch (error) {
-      console.error('Error submitting form:', error);
+      navigate('/material-checklist');
+    } catch (err) {
       alert(
-        language === 'mr'
-          ? `फॉर्म सबमिट करण्यात त्रुटी: ${error.message}`
-          : `Error submitting form: ${error.message}`
+        language === "mr"
+          ? `फॉर्म सबमिट करण्यात त्रुटी: ${err?.data?.message || 'Unknown error'}`
+          : `Error submitting form: ${err?.data?.message || 'Unknown error'}`
       );
     } finally {
       setIsSubmitting(false);
@@ -134,10 +131,7 @@ export default function CivilWorkChecklistForm() {
   };
 
   const renderTable = (data, step) => {
-    // Define steps where the Work column should be shown
     const showWorkColumn = [5, 6, 8, 9, 10].includes(step);
-
-    // Use all headers if Work column is shown, otherwise exclude Work
     const headers = showWorkColumn
       ? config[language].tableHeaders
       : config[language].tableHeaders.slice(0, -1);
@@ -162,7 +156,7 @@ export default function CivilWorkChecklistForm() {
                 <td className="border px-4 py-2">{row.specification}</td>
                 <td className="border px-4 py-2">{row.qty}</td>
                 {showWorkColumn && (
-                  <td className="border px-4 py-2">{row.work || '-'}</td>
+                  <td className="border px-4 py-2">{row.work || "-"}</td>
                 )}
               </tr>
             ))}
@@ -183,9 +177,9 @@ export default function CivilWorkChecklistForm() {
             checked={formData[stepKey] === true}
             onChange={() => handleYesNoChange(stepKey, true)}
             className="w-4 h-4 text-blue-600"
-            aria-label={language === 'mr' ? 'होय' : 'Yes'}
+            aria-label={language === "mr" ? "होय" : "Yes"}
           />
-          {language === 'mr' ? 'होय' : 'Yes'}
+          {language === "mr" ? "होय" : "Yes"}
         </label>
         <label className="flex items-center gap-2">
           <input
@@ -194,9 +188,9 @@ export default function CivilWorkChecklistForm() {
             checked={formData[stepKey] === false}
             onChange={() => handleYesNoChange(stepKey, false)}
             className="w-4 h-4 text-blue-600"
-            aria-label={language === 'mr' ? 'नाही' : 'No'}
+            aria-label={language === "mr" ? "नाही" : "No"}
           />
-          {language === 'mr' ? 'नाही' : 'No'}
+          {language === "mr" ? "नाही" : "No"}
         </label>
       </div>
     </div>
@@ -207,61 +201,61 @@ export default function CivilWorkChecklistForm() {
       step: 1,
       title: config[language].title1,
       table: tableData1,
-      questionKey: 'cctv_understood',
+      questionKey: "cctv_understood",
     },
     {
       step: 2,
       title: config[language].title2,
       table: tableData2,
-      questionKey: 'internet_understood',
+      questionKey: "internet_understood",
     },
     {
       step: 3,
       title: config[language].title3,
       table: tableData3,
-      questionKey: 'speaker_understood',
+      questionKey: "speaker_understood",
     },
     {
       step: 4,
       title: config[language].title4,
       table: tableData4,
-      questionKey: 'painting_understood',
+      questionKey: "painting_understood",
     },
     {
       step: 5,
       title: config[language].title5,
       table: tableData5,
-      questionKey: 'plumber_understood',
+      questionKey: "plumber_understood",
     },
     {
       step: 6,
       title: config[language].title6,
       table: tableData6,
-      questionKey: 'electrician_switch_socket_understood',
+      questionKey: "electrician_switch_socket_understood",
     },
     {
       step: 7,
       title: config[language].title7,
       table: tableData7,
-      questionKey: 'electrician_material_understood',
+      questionKey: "electrician_material_understood",
     },
     {
       step: 8,
       title: config[language].title8,
       table: tableData8,
-      questionKey: 'electrician_wire_understood',
+      questionKey: "electrician_wire_understood",
     },
     {
       step: 9,
       title: config[language].title9,
       table: tableData9,
-      questionKey: 'pop_tiles_understood',
+      questionKey: "pop_tiles_understood",
     },
     {
       step: 10,
       title: config[language].title10,
       table: tableData10,
-      questionKey: 'gas_piping_understood',
+      questionKey: "gas_piping_understood",
     },
   ];
 
@@ -270,23 +264,16 @@ export default function CivilWorkChecklistForm() {
       <div className="w-full max-w-2xl bg-[#e3f2fd] p-6 rounded-xl shadow-md">
         <div className="bg-white flex justify-between items-center mb-4 px-4 py-3 rounded-lg">
           <div className="flex items-center space-x-3">
-            <img
-              src={logo}
-              alt="YNK Logo"
-              className="h-10 w-10"
-              onError={(e) => {
-                console.error('Failed to load logo:', e);
-                e.target.src = '/fallback-logo.png'; // Fallback image
-              }}
-            />
             <h1 className="text-xl font-bold">YNK</h1>
           </div>
           <button
             onClick={handleLanguageToggle}
             className="text-sm text-gray-600 underline hover:text-blue-600"
-            aria-label={language === 'mr' ? 'Switch to English' : 'Switch to Marathi'}
+            aria-label={
+              language === "mr" ? "Switch to English" : "Switch to Marathi"
+            }
           >
-            {language === 'mr' ? 'English' : 'मराठी'}
+            {language === "mr" ? "English" : "मराठी"}
           </button>
         </div>
         <h2 className="text-center text-lg font-semibold mb-6">
@@ -297,7 +284,9 @@ export default function CivilWorkChecklistForm() {
           (config) =>
             step === config.step && (
               <div key={config.step}>
-                <h3 className="mb-3 font-medium text-gray-700">{config.title}</h3>
+                <h3 className="mb-3 font-medium text-gray-700">
+                  {config.title}
+                </h3>
                 {renderTable(config.table, config.step)}
                 {yesNoQuestion(
                   config.questionKey,
@@ -315,24 +304,24 @@ export default function CivilWorkChecklistForm() {
                   {step === questions.length ? (
                     <button
                       onClick={handleSubmit}
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isLoading}
                       className={`bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 focus:outline-none ${
-                        isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                        (isSubmitting || isLoading) ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                       aria-label={equipmentConfig[`submit_button_${language}`]}
                     >
-                      {isSubmitting
-                        ? language === 'mr'
-                          ? 'सबमिट करत आहे...'
-                          : 'Submitting...'
+                      {isSubmitting || isLoading
+                        ? language === "mr"
+                          ? "सबमिट करत आहे..."
+                          : "Submitting..."
                         : equipmentConfig[`submit_button_${language}`]}
                     </button>
                   ) : (
                     <button
                       onClick={handleNext}
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isLoading}
                       className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none ${
-                        isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                        (isSubmitting || isLoading) ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                       aria-label={equipmentConfig[`next_button_${language}`]}
                     >
@@ -340,6 +329,13 @@ export default function CivilWorkChecklistForm() {
                     </button>
                   )}
                 </div>
+                {error && (
+                  <p className="text-red-500 mt-4">
+                    {language === "mr"
+                      ? `त्रुटी: ${error?.data?.message || 'Unknown error'}`
+                      : `Error: ${error?.data?.message || 'Unknown error'}`}
+                  </p>
+                )}
               </div>
             )
         )}

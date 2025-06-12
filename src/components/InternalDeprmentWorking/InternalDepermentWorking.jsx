@@ -1,59 +1,59 @@
-import { useState } from 'react';
-import axios from 'axios';
-import logo from '../../assets/logo.png'; // Assuming the logo import matches the previous forms
-import formConfig from './InternalDeprmentWorkingQuestion'; // Importing the form configuration
+import { useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useSubmitFormMutation } from "../../store/formApi";
+import formConfig from "./InternalDeprmentWorkingQuestion";
 
 export default function InternalDepartmentWorking() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({});
-  const [language, setLanguage] = useState('mr');
+  const [language, setLanguage] = useState("mr");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [errors, setErrors] = useState({});
+  const [submitForm, { isLoading, error }] = useSubmitFormMutation();
 
   const totalQuestions = formConfig.fields.length;
 
-  // Validation messages
   const validationMessages = {
     en: {
-      answerRequired: 'Please provide an answer to the question.',
-      followupRequired: 'Please provide a value for the follow-up question.',
-      imageRequired: 'Please upload at least one image or video.',
-      checkboxRequired: 'Please select at least one option.',
+      answerRequired: "Please provide an answer to the question.",
+      followupRequired: "Please provide a value for the follow-up question.",
+      imageRequired: "Please upload at least one image or video.",
+      checkboxRequired: "Please select at least one option.",
       inputRequired: 'Please specify details for "Other".',
-      submitError: 'Failed to submit the form. Please try again.',
-      submitSuccess: 'Form submitted successfully!',
-      invalidDateFormat: 'Please enter a valid date (YYYY-MM-DD)',
-      invalidDate: 'Please enter a valid date',
-      pastDate: 'Date cannot be in the past',
+      submitError: "Failed to submit the form. Please try again.",
+      submitSuccess: "Form submitted successfully!",
+      invalidDateFormat: "Please enter a valid date (YYYY-MM-DD)",
+      invalidDate: "Please enter a valid date",
+      pastDate: "Date cannot be in the past",
     },
     mr: {
-      answerRequired: 'कृपया प्रश्नाचे उत्तर द्या.',
-      followupRequired: 'कृपया फॉलो-अप प्रश्नासाठी मूल्य प्रदान करा.',
-      imageRequired: 'कृपया किमान एक प्रतिमा किंवा व्हिडिओ अपलोड करा.',
-      checkboxRequired: 'कृपया किमान एक पर्याय निवडा.',
+      answerRequired: "कृपया प्रश्नाचे उत्तर द्या.",
+      followupRequired: "कृपया फॉलो-अप प्रश्नासाठी मूल्य प्रदान करा.",
+      imageRequired: "कृपया किमान एक प्रतिमा किंवा व्हिडिओ अपलोड करा.",
+      checkboxRequired: "कृपया किमान एक पर्याय निवडा.",
       inputRequired: 'कृपया "इतर" साठी तपशील निर्दिष्ट करा.',
-      submitError: 'फॉर्म सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.',
-      submitSuccess: 'फॉर्म यशस्वीपणे सबमिट झाला!',
-      invalidDateFormat: 'कृपया वैध तारीख प्रविष्ट करा (YYYY-MM-DD)',
-      invalidDate: 'कृपया वैध तारीख प्रविष्ट करा',
-      pastDate: 'तारीख भूतकाळातील असू शकत नाही',
+      submitError: "फॉर्म सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+      submitSuccess: "फॉर्म यशस्वीपणे सबमिट झाला!",
+      invalidDateFormat: "कृपया वैध तारीख प्रविष्ट करा (YYYY-MM-DD)",
+      invalidDate: "कृपया वैध तारीख प्रविष्ट करा",
+      pastDate: "तारीख भूतकाळातील असू शकत नाही",
     },
   };
 
-  // Validate current field
   const validateCurrentField = (field) => {
     const newErrors = {};
     const id = field.id;
 
     if (formData[id] === undefined || formData[id] === null) {
       newErrors[id] = validationMessages[language].answerRequired;
-    } else if (formData[id] === 'other' && !formData[`${id}_other`]) {
+    } else if (formData[id] === "other" && !formData[`${id}_other`]) {
       newErrors[id] = validationMessages[language].inputRequired;
     }
 
     return newErrors;
   };
 
-  // Validate all fields before submission
   const validateAllFields = () => {
     const newErrors = {};
     formConfig.fields.forEach((field) => {
@@ -63,23 +63,23 @@ export default function InternalDepartmentWorking() {
     });
     return newErrors;
   };
+
   const handleYesNoChange = (id, value) => {
     let answer;
-    if (value === 'yes') answer = true;
-    else if (value === 'no') answer = false;
-    else answer = 'other';
+    if (value === "yes") answer = true;
+    else if (value === "no") answer = false;
+    else answer = "other";
 
     setFormData((prev) => ({
       ...prev,
       [id]: answer,
-      ...(value !== 'other' && { [`${id}_other`]: '' }) // clear other input if not selected
+      ...(value !== "other" && { [`${id}_other`]: "" }),
     }));
     setErrors((prev) => ({ ...prev, [id]: null }));
   };
 
-
   const handleLanguageToggle = () => {
-    setLanguage((prev) => (prev === 'mr' ? 'en' : 'mr'));
+    setLanguage((prev) => (prev === "mr" ? "en" : "mr"));
     setErrors({});
   };
 
@@ -99,37 +99,48 @@ export default function InternalDepartmentWorking() {
     } else {
       const allErrors = validateAllFields();
       if (Object.keys(allErrors).length > 0) {
-        window.alert(validationMessages[language].allQuestionsRequired);
+        window.alert(validationMessages[language].answerRequired);
         setErrors(allErrors);
         return;
       }
 
-      // Prepare form data with full questions in the selected language
-      const formattedData = formConfig.fields.reduce((acc, field) => {
-        const question = field[`question_${language}`] || field.question_mr;
-        const answer = formData[field.id] === true ? (language === 'mr' ? 'होय' : 'Yes') :
-          formData[field.id] === false ? (language === 'mr' ? 'नाही' : 'No') :
-            (language === 'mr' ? 'उत्तर दिले नाही' : 'Not answered');
-        return {
-          ...acc,
-          [question]: answer,
-        };
-      }, {});
+      const formattedData = new FormData();
+      formattedData.append('formId', 'internal_department_working');
+      formattedData.append('language', language);
+      // Hardcoded user data - replace with dynamic data later
+      formattedData.append('name', 'Test User');
+      formattedData.append('mobile', '1234567890');
+      formattedData.append('branch', 'Test Branch');
 
-      console.log('Final submission:', formattedData);
+      formConfig.fields.forEach((field) => {
+        const question = field[`question_${language}`] || field.question_mr;
+        const answer =
+          formData[field.id] === true
+            ? language === "mr"
+              ? "होय"
+              : "Yes"
+            : formData[field.id] === false
+            ? language === "mr"
+              ? "नाही"
+              : "No"
+            : formData[field.id] === "other"
+            ? formData[`${field.id}_other`] || (language === "mr" ? "इतर" : "Other")
+            : language === "mr"
+            ? "उत्तर दिले नाही"
+            : "Not answered";
+        formattedData.append(question, answer);
+      });
 
       try {
-        const response = await axios.post('/api', formData, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        console.log('API Response:', response.data);
+        await submitForm(formattedData).unwrap();
         window.alert(validationMessages[language].submitSuccess);
-      } catch (error) {
-        console.error('Error submitting form:', error);
-        window.alert(validationMessages[language].submitError);
+        navigate('/inspection-checklist');
+      } catch (err) {
+        window.alert(
+          language === "mr"
+            ? `फॉर्म सबमिट करण्यात त्रुटी: ${err?.data?.message || 'Unknown error'}`
+            : `Error submitting form: ${err?.data?.message || 'Unknown error'}`
+        );
       }
     }
   };
@@ -147,57 +158,71 @@ export default function InternalDepartmentWorking() {
 
     return (
       <div key={id} className="mb-6">
-        <h3 className="text-lg font-medium text-left text-gray-800 mb-2">{question}</h3>
+        <h3 className="text-lg font-medium text-left text-gray-800 mb-2">
+          {question}
+        </h3>
         <div className="flex flex-col space-y-3">
           <label className="flex items-center space-x-3">
             <input
               type="radio"
               name={id}
               checked={formData[id] === true}
-              onChange={() => handleYesNoChange(id, 'yes')}
+              onChange={() => handleYesNoChange(id, "yes")}
               className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
             />
-            <span className={`text-base ${formData[id] === true ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>
-              {language === 'mr' ? 'होय' : 'Yes'}
+            <span
+              className={`text-base ${
+                formData[id] === true
+                  ? "text-gray-800 font-medium"
+                  : "text-gray-600"
+              }`}
+            >
+              {language === "mr" ? "होय" : "Yes"}
             </span>
           </label>
-       <div className="flex flex-col space-y-1">
-  <label className="flex items-center space-x-3">
-    <input
-      type="radio"
-      name={id}
-      checked={formData[id] === 'other'}
-      onChange={() => handleYesNoChange(id, 'other')}
-      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-    />
-    <span
-      className={`text-base ${
-        formData[id] === 'other' ? 'text-gray-800 font-medium' : 'text-gray-600'
-      }`}
-    >
-      {language === 'mr' ? 'इतर' : 'Other'}
-    </span>
-  </label>
+          <div className="flex flex-col space-y-1">
+            <label className="flex items-center space-x-3">
+              <input
+                type="radio"
+                name={id}
+                checked={formData[id] === "other"}
+                onChange={() => handleYesNoChange(id, "other")}
+                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+              />
+              <span
+                className={`text-base ${
+                  formData[id] === "other"
+                    ? "text-gray-800 font-medium"
+                    : "text-gray-600"
+                }`}
+              >
+                {language === "mr" ? "इतर" : "Other"}
+              </span>
+            </label>
 
-  {formData[id] === 'other' && (
-    <div className="ml-6">
-      <input
-        type="text"
-        value={formData[`${id}_other`] || ''}
-        onChange={(e) =>
-          setFormData((prev) => ({
-            ...prev,
-            [`${id}_other`]: e.target.value,
-          }))
-        }
-        placeholder={language === 'mr' ? 'तपशील लिहा' : 'Please specify'}
-        className="w-full border-none rounded px-3 py-2 text-sm "
-      />
-    </div>
-  )}
-</div>
-
+            {formData[id] === "other" && (
+              <div className="ml-6">
+                <input
+                  type="text"
+                  value={formData[`${id}_other`] || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      [`${id}_other`]: e.target.value,
+                    }))
+                  }
+                  placeholder={
+                    language === "mr" ? "तपशील लिहा" : "Please specify"
+                  }
+                  className="w-full border-none rounded px-3 py-2 text-sm"
+                />
+              </div>
+            )}
+          </div>
         </div>
+        {errors[id] && (
+          <p className="text-red-500 text-sm mt-1">{errors[id]}</p>
+        )}
       </div>
     );
   };
@@ -209,14 +234,13 @@ export default function InternalDepartmentWorking() {
       <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
         <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
           <div className="flex items-center space-x-3">
-            <img src={logo} alt="YNK Logo" className="h-10 w-10" />
             <h1 className="text-xl font-bold">YNK</h1>
           </div>
           <button
             onClick={handleLanguageToggle}
             className="text-sm text-gray-600 underline hover:text-blue-600"
           >
-            {language === 'mr' ? 'English' : 'मराठी'}
+            {language === "mr" ? "English" : "मराठी"}
           </button>
         </div>
 
@@ -230,23 +254,40 @@ export default function InternalDepartmentWorking() {
           <button
             onClick={handleBack}
             className="text-gray-500 underline disabled:text-gray-300 hover:text-blue-600"
-            disabled={currentQuestionIndex === 0}
+            disabled={currentQuestionIndex === 0 || isLoading}
           >
             {formConfig.navigation_buttons?.[`back_${language}`] ||
-              (language === 'mr' ? 'मागे' : 'Back')}
+              (language === "mr" ? "मागे" : "Back")}
           </button>
           <button
             onClick={handleNext}
-            className={`${currentQuestionIndex < totalQuestions - 1
-                ? 'bg-blue-600 hover:bg-blue-700'
-                : 'bg-green-600 hover:bg-green-700'
-              } text-white px-4 py-2 rounded font-medium`}
+            className={`${
+              currentQuestionIndex < totalQuestions - 1
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-green-600 hover:bg-green-700"
+            } text-white px-4 py-2 rounded font-medium ${
+              isLoading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isLoading}
           >
-            {currentQuestionIndex < totalQuestions - 1
-              ? formConfig.navigation_buttons?.[`next_${language}`] || (language === 'mr' ? 'पुढे' : 'Next')
-              : formConfig[`submit_button_${language}`] || (language === 'mr' ? 'सबमिट करा' : 'Submit')}
+            {isLoading
+              ? language === "mr"
+                ? "सबमिट करत आहे..."
+                : "Submitting..."
+              : currentQuestionIndex < totalQuestions - 1
+              ? formConfig.navigation_buttons?.[`next_${language}`] ||
+                (language === "mr" ? "पुढे" : "Next")
+              : formConfig[`submit_button_${language}`] ||
+                (language === "mr" ? "सबमिट करा" : "Submit")}
           </button>
         </div>
+        {error && (
+          <p className="text-red-500 text-sm mt-4">
+            {language === "mr"
+              ? `त्रुटी: ${error?.data?.message || 'Unknown error'}`
+              : `Error: ${error?.data?.message || 'Unknown error'}`}
+          </p>
+        )}
       </div>
     </div>
   );

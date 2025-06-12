@@ -1,9 +1,9 @@
 import { useState } from "react";
-import logo from "../../assets/logo.png"; // Assuming you have this logo file
+import { useNavigate } from "react-router-dom";
+import { useSubmitFormMutation } from "../../store/formApi";
 import ProjectWorkFollowupQuestion from "./ProjectWorkFollowupQuestion";
-const {
-  formConfig
-}= ProjectWorkFollowupQuestion;
+
+const { formConfig } = ProjectWorkFollowupQuestion;
 
 const validationMessages = {
   en: {
@@ -33,9 +33,11 @@ const validationMessages = {
 };
 
 export default function ProjectWorkFollowup() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({});
   const [language, setLanguage] = useState("mr");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [submitForm, { isLoading, error }] = useSubmitFormMutation();
 
   const totalQuestions = formConfig.fields.length;
 
@@ -154,7 +156,7 @@ export default function ProjectWorkFollowup() {
     if (field.subQuestions && fieldData?.answer === true) {
       field.subQuestions.forEach((subQ) => {
         const subFieldData = fieldData?.subQuestions?.[subQ.id];
-        const subErrorMessages = validateField(subQ, subFieldData);
+        const subErrorMessages = validateField(subQ, subFieldData, field.id);
         errorMessages.push(...subErrorMessages);
       });
     }
@@ -162,7 +164,7 @@ export default function ProjectWorkFollowup() {
     return errorMessages;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const currentField = formConfig.fields[currentQuestionIndex];
     const currentFieldData = formData[currentField.id];
     const errorMessages = validateField(currentField, currentFieldData);
@@ -175,11 +177,78 @@ export default function ProjectWorkFollowup() {
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
+      const formattedData = new FormData();
+      formattedData.append('formId', 'project_work_followup');
+      formattedData.append('language', language);
+      // Hardcoded user data - replace with dynamic data later
+      formattedData.append('name', 'Test User');
+      formattedData.append('mobile', '1234567890');
+      formattedData.append('branch', 'Test Branch');
+
+      formConfig.fields.forEach((field, fieldIndex) => {
+        const fieldData = formData[field.id];
+        const question = field[`question_${language}`] || field.question_mr;
+        const answer = fieldData?.answer === true
+          ? (language === "mr" ? "होय" : "Yes")
+          : fieldData?.answer === false
+          ? (language === "mr" ? "नाही" : "No")
+          : (language === "mr" ? "उत्तर दिले नाही" : "Not answered");
+        
+        formattedData.append(question, answer);
+
+        if (fieldData?.answer !== undefined) {
+          if (fieldData.answer === false && field.hasReason) {
+            formattedData.append(`${question} - Reason`, fieldData.reason || "Not provided");
+          }
+          if (fieldData.answer === true) {
+            if (field.type === "yesno_with_media" && fieldData.media) {
+              formattedData.append(`${question} - Media`, fieldData.media);
+            }
+            if (field.hasChannelSize) {
+              formattedData.append(`${question} - Channel Size`, fieldData.channelSize || "Not provided");
+              formattedData.append(`${question} - Support Size`, fieldData.supportSize || "Not provided");
+            }
+            if (field.hasSpecialInfo) {
+              formattedData.append(`${question} - Special Info (CCTV, Serial No., Password)`, fieldData.specialInfo || "Not provided");
+              formattedData.append(`${question} - Shop Video`, fieldData.shopVideo || "Not provided");
+              formattedData.append(`${question} - Info Board`, fieldData.infoBoard || "Not provided");
+            }
+            if (field.subQuestions) {
+              field.subQuestions.forEach((subQ, subIndex) => {
+                const subFieldData = fieldData.subQuestions?.[subQ.id];
+                const subQuestion = subQ[`question_${language}`] || subQ.question_mr;
+                const subAnswer = subFieldData?.answer === true
+                  ? (language === "mr" ? "होय" : "Yes")
+                  : subFieldData?.answer === false
+                  ? (language === "mr" ? "नाही" : "No")
+                  : (language === "mr" ? "उत्तर दिले नाही" : "Not answered");
+                
+                formattedData.append(`${question} - ${subQuestion}`, subAnswer);
+
+                if (subFieldData?.answer !== undefined) {
+                  if (subFieldData.answer === false && subQ.hasReason) {
+                    formattedData.append(`${question} - ${subQuestion} - Reason`, subFieldData.reason || "Not provided");
+                  }
+                  if (subFieldData.answer === true && subQ.type === "yesno_with_media" && subFieldData.media) {
+                    formattedData.append(`${question} - ${subQuestion} - Media`, subFieldData.media);
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+
       try {
-        console.log("Final submission:", formData);
+        await submitForm(formattedData).unwrap();
         window.alert(validationMessages[language].submitSuccess);
-      } catch (error) {
-        window.alert(validationMessages[language].submitError);
+        navigate('/material-checklist');
+      } catch (err) {
+        window.alert(
+          language === "mr"
+            ? `फॉर्म सबमिट करण्यात त्रुटी: ${err?.data?.message || 'Unknown error'}`
+            : `Error submitting form: ${err?.data?.message || 'Unknown error'}`
+        );
       }
     }
   };
@@ -211,7 +280,8 @@ export default function ProjectWorkFollowup() {
               name={parentId ? `${parentId}-${id}` : id}
               checked={currentFieldData?.answer === true}
               onChange={() => handleYesNoChange(id, "yes", parentId)}
-              className="w-4 h-4  focus:ring-gray-400  accent-gray-500"
+              className="w-4 h-4 focus:ring-gray-400 accent-gray-500"
+              disabled={isLoading}
             />
             <span className="ml-3 text-gray-700">
               {language === "mr" ? "होय" : "Yes"}
@@ -224,7 +294,8 @@ export default function ProjectWorkFollowup() {
               name={parentId ? `${parentId}-${id}` : id}
               checked={currentFieldData?.answer === false}
               onChange={() => handleYesNoChange(id, "no", parentId)}
-              className="w-4 h-4  accent-gray-500"
+              className="w-4 h-4 accent-gray-500"
+              disabled={isLoading}
             />
             <span className="ml-3 text-gray-700">
               {language === "mr" ? "नाही" : "No"}
@@ -251,6 +322,7 @@ export default function ProjectWorkFollowup() {
                         parentId
                       )
                     }
+                    disabled={isLoading}
                   >
                     <option value="">
                       {language === "mr" ? "निवडा" : "Select"}
@@ -277,6 +349,7 @@ export default function ProjectWorkFollowup() {
                         parentId
                       )
                     }
+                    disabled={isLoading}
                   >
                     <option value="">
                       {language === "mr" ? "निवडा" : "Select"}
@@ -311,6 +384,7 @@ export default function ProjectWorkFollowup() {
                         parentId
                       )
                     }
+                    disabled={isLoading}
                   />
                 </div>
                 <div>
@@ -331,6 +405,7 @@ export default function ProjectWorkFollowup() {
                         parentId
                       )
                     }
+                    disabled={isLoading}
                   />
                 </div>
                 <div>
@@ -351,6 +426,7 @@ export default function ProjectWorkFollowup() {
                         parentId
                       )
                     }
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -368,6 +444,7 @@ export default function ProjectWorkFollowup() {
                   onChange={(e) =>
                     handleInputChange(id, "media", e.target.files[0], parentId)
                   }
+                  disabled={isLoading}
                 />
               </div>
             )}
@@ -388,6 +465,7 @@ export default function ProjectWorkFollowup() {
                     onChange={(e) =>
                       handleInputChange(id, "reason", e.target.value, parentId)
                     }
+                    disabled={isLoading}
                   />
                 </div>
               )}
@@ -410,21 +488,20 @@ export default function ProjectWorkFollowup() {
   const currentField = formConfig.fields[currentQuestionIndex];
 
   return (
-     <div className="min-h-screen flex items-center justify-center p-4">
-       <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
-         {/* Header */}
-             <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
-                   <div className="flex items-center space-x-3">
-                     <img src={logo} alt="YNK Logo" className="h-10 w-10" />
-                     <h1 className="text-xl font-bold">YNK</h1>
-                   </div>
-                   <button
-                     onClick={handleLanguageToggle}
-                     className="text-sm text-gray-600 underline hover:text-blue-600"
-                   >
-                     {language === 'mr' ? 'English' : 'मराठी'}
-                   </button>
-                 </div>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-lg bg-[#e3f2fd] p-6 rounded-xl shadow-md">
+        <div className="bg-white flex justify-between items-center mb-4 px-3 py-2 rounded">
+          <div className="flex items-center space-x-3">
+            <h1 className="text-xl font-bold">YNK</h1>
+          </div>
+          <button
+            onClick={handleLanguageToggle}
+            className="text-sm text-gray-600 underline hover:text-blue-600"
+            disabled={isLoading}
+          >
+            {language === 'mr' ? 'English' : 'मराठी'}
+          </button>
+        </div>
 
         <h2 className="text-center text-lg font-semibold mb-6 text-gray-800">
           {formConfig[`title_${language}`]}
@@ -436,15 +513,26 @@ export default function ProjectWorkFollowup() {
           <button
             onClick={handleBack}
             className="text-blue-600 underline disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={currentQuestionIndex === 0}
+            disabled={currentQuestionIndex === 0 || isLoading}
           >
             {language === "mr" ? "मागे" : "Back"}
           </button>
           <button
             onClick={handleNext}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
+            className={`${
+              currentQuestionIndex < totalQuestions - 1
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-green-600 hover:bg-green-700"
+            } text-white px-6 py-2 rounded transition-colors ${
+              isLoading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isLoading}
           >
-            {currentQuestionIndex < totalQuestions - 1
+            {isLoading
+              ? language === "mr"
+                ? "सबमिट करत आहे..."
+                : "Submitting..."
+              : currentQuestionIndex < totalQuestions - 1
               ? language === "mr"
                 ? "पुढे"
                 : "Next"
@@ -453,6 +541,13 @@ export default function ProjectWorkFollowup() {
               : "Submit"}
           </button>
         </div>
+        {error && (
+          <p className="text-red-500 text-sm mt-4 text-center">
+            {language === "mr"
+              ? `त्रुटी: ${error?.data?.message || 'Unknown error'}`
+              : `Error: ${error?.data?.message || 'Unknown error'}`}
+          </p>
+        )}
       </div>
     </div>
   );
